@@ -1,0 +1,47 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/category/category",
+    "pages/cart/cart",
+    "pages/order/order",
+    "pages/user/user",
+    "pages/product-detail/product-detail",
+    "pages/search/search",
+    "pages/order-detail/order-detail",
+    "pages/checkout/checkout",
+    "pages/address/address",
+    "pages/address-edit/address-edit",
+    "pages/favorites/favorites",
+    "pages/coupons/coupons",
+    "pages/notifications/notifications",
+    "pages/reviews/reviews",
+    "pages/logistics/logistics",
+    "pages/exchange/exchange",
+    "pages/exchange-detail/exchange-detail",
+    "pages/refund/refund",
+    "pages/feedback/feedback",
+    "pages/login/login",
+    "pages/register/register"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#667eea",
+    "navigationBarTitleText": "线上购物",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f5f5"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#667eea",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "首页" },
+      { "pagePath": "pages/category/category", "text": "分类" },
+      { "pagePath": "pages/cart/cart", "text": "购物车" },
+      { "pagePath": "pages/order/order", "text": "订单" },
+      { "pagePath": "pages/user/user", "text": "我的" }
+    ]
+  },
+  "sitemapLocation": "sitemap.json"
+}

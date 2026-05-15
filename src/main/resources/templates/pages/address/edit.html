@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${address != null} ? '编辑地址' : '新增地址'">编辑地址 - 线上购物与交易系统</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="navbar desktop-nav">
+    <div class="nav-container">
+        <a href="/" class="nav-brand">线上购物与交易系统</a>
+        <button class="hamburger-btn" onclick="toggleMobileMenu()">☰</button>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="/address/list">返回地址列表</a></li>
+            <li class="nav-item"><a href="/product/list">商品列表</a></li>
+            <li class="nav-item"><a href="/cart/view">购物车</a></li>
+            <li class="nav-item"><a href="/order/list">我的订单</a></li>
+            <li class="nav-item"><a href="/logout">退出</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="mobile-dropdown" id="mobileDropdown">
+    <a href="/">首页</a>
+    <a href="/product/list">商品列表</a>
+    <a href="/cart/view">购物车</a>
+    <a href="/order/list">我的订单</a>
+    <a href="/address/list">收货地址</a>
+    <a href="/logout">退出登录</a>
+</div>
+
+<div class="container">
+    <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; padding: 30px;">
+        <h2 th:text="${address != null} ? '编辑地址' : '新增地址'" style="margin-bottom: 24px; color: #2c3e50;">新增地址</h2>
+
+        <form method="post" th:action="@{/address/save}">
+            <input type="hidden" name="id" th:value="${address != null ? address.id : ''}" />
+
+            <div class="form-group" style="margin-bottom: 18px;">
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #333;">收货人</label>
+                <input type="text" name="receiverName" th:value="${address != null ? address.receiverName : ''}" required
+                       placeholder="请输入收货人姓名" class="input-field" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;" />
+            </div>
+
+            <div class="form-group" style="margin-bottom: 18px;">
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #333;">手机号码</label>
+                <input type="text" name="receiverPhone" th:value="${address != null ? address.receiverPhone : ''}" required
+                       placeholder="请输入手机号码" class="input-field" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;" />
+            </div>
+
+            <div class="form-group" style="margin-bottom: 18px;">
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #333;">所在地区</label>
+                <input type="text" name="region" th:value="${address != null ? address.region : ''}" required
+                       placeholder="例如：广东省 深圳市 南山区" class="input-field" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;" />
+            </div>
+
+            <div class="form-group" style="margin-bottom: 18px;">
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #333;">详细地址</label>
+                <textarea name="detailAddress" required rows="3" placeholder="街道、楼栋、门牌号等"
+                          class="input-field" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; resize: vertical;">${address != null ? address.detailAddress : ''}</textarea>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 18px;">
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #333;">标签</label>
+                <div style="display: flex; gap: 10px;">
+                    <label style="display: flex; align-items: center; gap: 4px; padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; cursor: pointer;">
+                        <input type="radio" name="label" value="家" th:checked="${address != null and address.label == '家'}" /> 家
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 4px; padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; cursor: pointer;">
+                        <input type="radio" name="label" value="公司" th:checked="${address != null and address.label == '公司'}" /> 公司
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 4px; padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; cursor: pointer;">
+                        <input type="radio" name="label" value="学校" th:checked="${address != null and address.label == '学校'}" /> 学校
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 4px; padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; cursor: pointer;">
+                        <input type="radio" name="label" value="" th:checked="${address == null or address.label == ''}" /> 无
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" name="isDefault" value="1" th:checked="${address != null and address.isDefault == 1}" />
+                    <span style="font-weight: bold; color: #333;">设为默认地址</span>
+                </label>
+            </div>
+
+            <div style="display: flex; gap: 12px;">
+                <button type="submit" class="btn btn-primary" style="padding: 12px 40px; flex:1;">保存地址</button>
+                <a href="/address/list" class="btn btn-secondary" style="padding: 12px 24px; text-decoration: none;">取消</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleMobileMenu() {
+        var menu = document.getElementById('mobileDropdown');
+        if (menu) menu.classList.toggle('show');
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        var menu = document.getElementById('mobileDropdown');
+        if (!menu) return;
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.hamburger-btn')) return;
+            if (!e.target.closest('.mobile-dropdown')) menu.classList.remove('show');
+        });
+    });
+</script>
+
+<div class="mobile-bottom-nav">
+    <div class="nav-items">
+        <a href="/" class="nav-item"><span class="nav-icon">🏠</span><span>首页</span></a>
+        <a href="/product/list" class="nav-item"><span class="nav-icon">📦</span><span>商品</span></a>
+        <a href="/cart/view" class="nav-item"><span class="nav-icon">🛒</span><span>购物车</span></a>
+        <a href="/order/list" class="nav-item"><span class="nav-icon">📋</span><span>订单</span></a>
+        <a href="/" class="nav-item"><span class="nav-icon">👤</span><span>我的</span></a>
+    </div>
+</div>
+</body>
+</html>

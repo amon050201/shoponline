@@ -1,0 +1,88 @@
+
+<wxs module="img" src="../../utils/image.wxs" />
+<!-- pages/profile/profile.wxml -->
+<view class="page-container">
+  <!-- 用户头部 -->
+  <view class="profile-header">
+    <view class="profile-bg"></view>
+    <view class="profile-info" wx:if="{{isLoggedIn && userInfo}}">
+      <view class="avatar">
+        <text class="avatar-text">{{userInfo._avatarLetter || 'U'}}</text>
+      </view>
+      <view class="profile-detail">
+        <text class="profile-name">{{userInfo.username || '用户'}}</text>
+        <text class="profile-role" wx:if="{{userInfo.roleType}}">
+          {{userInfo.roleType === 'ADMIN' ? '管理员' : '普通用户'}}
+        </text>
+      </view>
+    </view>
+    <view class="profile-info" wx:else bindtap="goToLogin">
+      <view class="avatar avatar-login">
+        <text class="avatar-text">👤</text>
+      </view>
+      <view class="profile-detail">
+        <text class="profile-name">点击登录</text>
+        <text class="profile-role">登录后享受更多服务</text>
+      </view>
+      <text class="profile-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 订单快捷入口 -->
+  <view class="order-quick card" wx:if="{{isLoggedIn}}">
+    <view class="order-quick-header flex-between">
+      <text class="order-quick-title">我的订单</text>
+      <text class="order-quick-more" bindtap="onMenuTap" data-id="order" data-url="/pages/order/order">
+        查看全部 ›
+      </text>
+    </view>
+    <view class="order-status-list">
+      <view class="order-status-item" bindtap="onOrderStatusTap" data-status="pending">
+        <view class="order-status-icon-wrap">
+          <text class="order-status-icon">⏳</text>
+        </view>
+        <text class="order-status-name">待付款</text>
+      </view>
+      <view class="order-status-item" bindtap="onOrderStatusTap" data-status="paid">
+        <view class="order-status-icon-wrap">
+          <text class="order-status-icon">📦</text>
+        </view>
+        <text class="order-status-name">待发货</text>
+      </view>
+      <view class="order-status-item" bindtap="onOrderStatusTap" data-status="shipped">
+        <view class="order-status-icon-wrap">
+          <text class="order-status-icon">🚚</text>
+        </view>
+        <text class="order-status-name">待收货</text>
+      </view>
+      <view class="order-status-item" bindtap="onOrderStatusTap" data-status="completed">
+        <view class="order-status-icon-wrap">
+          <text class="order-status-icon">✅</text>
+        </view>
+        <text class="order-status-name">已完成</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+  <view class="menu-list card">
+    <view class="menu-item" wx:for="{{menuList}}" wx:key="id"
+      bindtap="onMenuTap" data-id="{{item.id}}" data-url="{{item.url}}" data-name="{{item.name}}">
+      <view class="menu-left">
+        <text class="menu-icon">{{item.icon}}</text>
+        <text class="menu-name">{{item.name}}</text>
+      </view>
+      <view class="menu-right">
+        <text class="menu-badge" wx:if="{{item.badge}}">{{item.badge}}</text>
+        <text class="menu-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 退出登录 -->
+  <view class="logout-section" wx:if="{{isLoggedIn}}">
+    <button class="logout-btn" bindtap="onLogout">退出登录</button>
+  </view>
+
+  <view class="safe-area-bottom"></view>
+</view>

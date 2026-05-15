@@ -1,0 +1,19 @@
+var SERVER = 'http://172.21.21.181:8080';
+var PLACEHOLDER = SERVER + '/images/default-product.svg';
+
+function img(url) {
+  if (!url || url.length === 0) return PLACEHOLDER;
+  if (url.indexOf('http') === 0 || url.indexOf('https') === 0) return url;
+  if (url.indexOf('data:') === 0) return url;
+  if (url.indexOf('/') === 0) return SERVER + url;
+  return PLACEHOLDER;
+}
+
+function price(val) {
+  if (!val) return '0.00';
+  var num = parseFloat(val);
+  if (isNaN(num)) return '0.00';
+  return num.toFixed(2);
+}
+
+module.exports = { img: img, price: price };

@@ -1,0 +1,25 @@
+-- 创建交换订单表
+CREATE TABLE IF NOT EXISTS exchange_order (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_no VARCHAR(50) NOT NULL UNIQUE COMMENT '订单号',
+    initiator_id BIGINT NOT NULL COMMENT '发起者ID',
+    receiver_id BIGINT NOT NULL COMMENT '接收者ID',
+    initiator_product_id INT NOT NULL COMMENT '发起者商品ID',
+    receiver_product_id INT NOT NULL COMMENT '接收者商品ID',
+    price_difference DECIMAL(10,2) DEFAULT 0.00 COMMENT '差价（正数表示发起者需补钱，负数表示接收者需补钱）',
+    status TINYINT DEFAULT 0 COMMENT '状态：0-待确认，1-已确认，2-已完成，3-已取消，4-已拒绝',
+    payment_status TINYINT DEFAULT 0 COMMENT '支付状态：0-未支付，1-已支付',
+    payment_method VARCHAR(50) COMMENT '支付方式',
+    payment_time DATETIME COMMENT '支付时间',
+    confirm_time DATETIME COMMENT '确认时间',
+    complete_time DATETIME COMMENT '完成时间',
+    initiator_address VARCHAR(500) COMMENT '发起者地址',
+    receiver_address VARCHAR(500) COMMENT '接收者地址',
+    remark VARCHAR(500) COMMENT '备注',
+    created_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (initiator_id) REFERENCES users(id),
+    FOREIGN KEY (receiver_id) REFERENCES users(id),
+    FOREIGN KEY (initiator_product_id) REFERENCES product(id),
+    FOREIGN KEY (receiver_product_id) REFERENCES product(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='交换订单表';

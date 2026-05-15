@@ -1,0 +1,2 @@
+<wxs module="img" src="../../utils/image.wxs" />
+<view class="page-wrap" style="padding:30rpx;"><view style="background:#fff;border-radius:16rpx;padding:30rpx;"><view style="font-size:28rpx;font-weight:bold;margin-bottom:20rpx;">申请退款</view><textarea placeholder="请描述退款原因" value="{{reason}}" bindinput="onReason" style="width:100%;height:200rpx;border:1rpx solid #f0f0f0;border-radius:8rpx;padding:16rpx;font-size:26rpx;"/><button class="btn-primary" bindtap="submit" style="margin-top:30rpx;">提交申请</button></view></view>

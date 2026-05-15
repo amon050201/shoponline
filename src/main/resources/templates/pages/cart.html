@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>购物车 - 在线购物系统</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="navbar desktop-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">线上购物与交易系统</a>
+            <button class="hamburger-btn" onclick="toggleMobileMenu()">☰</button>
+            <ul class="nav-menu">
+                <li class="nav-item"><a th:href="@{/product/list}">继续购物</a></li>
+                <li class="nav-item"><a th:href="@{/order/list}">我的订单</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 移动端顶部栏 -->
+    <div class="mobile-top-bar">
+        <a href="/product/list" class="back-btn">←</a>
+        <span class="page-title">购物车</span>
+        <span class="right-action"></span>
+    </div>
+    
+    <div class="container">
+        <div class="cart-container">
+            <h2 style="margin-bottom: 20px; color: #333;">购物车</h2>
+            
+            <div th:if="${carts != null and !carts.empty}">
+                <div class="cart-header">
+                    <div>选择</div>
+                    <div>商品信息</div>
+                    <div>单价</div>
+                    <div>数量</div>
+                    <div>小计</div>
+                    <div>操作</div>
+                </div>
+                
+                <div th:each="cart : ${carts}" class="cart-item" th:data-id="${cart.id}">
+                    <div>
+                        <input type="checkbox" class="item-checkbox" th:checked="${cart.selected == 1}"
+                               th:onchange="'updateSelected(' + ${cart.id} + ', this.checked)'">
+                    </div>
+                    <div class="item-product">
+                        <img th:src="${cart.product != null and cart.product.imageUrl != null ? cart.product.imageUrl : '/images/default-product.jpg'}" 
+                             alt="商品图片" class="item-image">
+                        <div class="item-info">
+                            <div class="item-name" th:text="${cart.product != null ? cart.product.name : '商品已下架'}">商品名称</div>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        ¥<span th:text="${cart.product != null ? cart.product.price : '0.00'}">0.00</span>
+                    </div>
+                    <div class="item-quantity">
+                        <button class="qty-btn" th:onclick="'updateQuantity(' + ${cart.id} + ', -1)'">-</button>
+                        <input type="number" class="qty-input" th:value="${cart.quantity}" readonly>
+                        <button class="qty-btn" th:onclick="'updateQuantity(' + ${cart.id} + ', 1)'">+</button>
+                    </div>
+                    <div class="item-total">
+                        ¥<span th:text="${cart.product != null ? cart.product.price * cart.quantity : '0.00'}">0.00</span>
+                    </div>
+                    <div class="item-action">
+                        <button class="delete-btn" th:onclick="'deleteItem(' + ${cart.id} + ')'">删除</button>
+                    </div>
+                </div>
+                
+                <div class="cart-footer">
+                    <div class="select-all">
+                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                        <label for="selectAll">全选</label>
+                    </div>
+                    <div class="summary">
+                        <div class="total-amount">
+                            合计：<span class="total-price" id="totalPrice">¥0.00</span>
+                        </div>
+                        <button class="checkout-btn" onclick="checkout()">去结算</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div th:if="${carts == null or carts.empty}" class="empty-cart">
+                <h2>购物车是空的</h2>
+                <p style="margin: 20px 0;">快去挑选心仪的商品吧！</p>
+                <a th:href="@{/product/list}">去购物</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function updateQuantity(cartId, change) {
+            const item = document.querySelector(`.cart-item[data-id="${cartId}"]`);
+            const input = item.querySelector('.qty-input');
+            const newQuantity = parseInt(input.value) + change;
+            
+            if (newQuantity < 1) return;
+            
+            fetch('/cart/updateQuantity', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${cartId}&quantity=${newQuantity}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 200) {
+                    location.reload();
+                } else {
+                    alert(data.message || '更新失败');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('更新失败');
+            });
+        }
+        
+        function updateSelected(cartId, checked) {
+            const selected = checked ? 1 : 0;
+            
+            fetch('/cart/updateSelected', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${cartId}&selected=${selected}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code !== 200) {
+                    alert(data.message || '更新失败');
+                }
+                calculateTotal();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        
+        function deleteItem(cartId) {
+            if (!confirm('确定要删除这个商品吗？')) return;
+            
+            fetch(`/cart/delete/${cartId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 200) {
+                    location.reload();
+                } else {
+                    alert(data.message || '删除失败');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('删除失败');
+            });
+        }
+        
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.item-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+                const cartId = checkbox.closest('.cart-item').dataset.id;
+                updateSelected(cartId, selectAll.checked);
+            });
+        }
+        
+        function calculateTotal() {
+            let total = 0;
+            const items = document.querySelectorAll('.cart-item');
+            items.forEach(item => {
+                const checkbox = item.querySelector('.item-checkbox');
+                if (checkbox.checked) {
+                    const priceText = item.querySelector('.item-price span').textContent;
+                    const quantity = parseInt(item.querySelector('.qty-input').value);
+                    const price = parseFloat(priceText);
+                    total += price * quantity;
+                }
+            });
+            document.getElementById('totalPrice').textContent = '¥' + total.toFixed(2);
+        }
+        
+        function checkout() {
+            const selectedItems = [];
+            const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+            checkboxes.forEach(checkbox => {
+                const cartId = checkbox.closest('.cart-item').dataset.id;
+                selectedItems.push(parseInt(cartId));
+            });
+
+            if (selectedItems.length === 0) {
+                alert('请选择要结算的商品');
+                return;
+            }
+
+            // 提交到确认订单页
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/order/confirm';
+            form.style.display = 'none';
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'cartIdsJson';
+            input.value = JSON.stringify(selectedItems);
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
+        // 页面加载时计算总价
+        window.onload = function() {
+            calculateTotal();
+        };
+
+        function toggleMobileMenu() {
+            var menu = document.getElementById('mobileDropdown');
+            if (menu) menu.classList.toggle('show');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var menu = document.getElementById('mobileDropdown');
+            if (!menu) return;
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.hamburger-btn')) return;
+                if (!e.target.closest('.mobile-dropdown')) {
+                    menu.classList.remove('show');
+                }
+            });
+        });
+    </script>
+
+    <!-- 移动端底部导航 -->
+    <div class="mobile-bottom-nav">
+        <div class="nav-items">
+            <a href="/" class="nav-item">
+                <span class="nav-icon">🏠</span>
+                <span>首页</span>
+            </a>
+            <a href="/product/list" class="nav-item">
+                <span class="nav-icon">📦</span>
+                <span>商品</span>
+            </a>
+            <a href="/cart/view" class="nav-item active">
+                <span class="nav-icon">🛒</span>
+                <span>购物车</span>
+            </a>
+            <a href="/order/list" class="nav-item">
+                <span class="nav-icon">📋</span>
+                <span>订单</span>
+            </a>
+            <a href="/" class="nav-item">
+                <span class="nav-icon">👤</span>
+                <span>我的</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

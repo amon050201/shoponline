@@ -1,0 +1,117 @@
+
+<wxs module="img" src="../../utils/image.wxs" />
+<!-- pages/auth/auth.wxml -->
+<view class="page-container auth-container">
+  <!-- Logo -->
+  <view class="auth-logo">
+    <view class="logo-icon">🛍️</view>
+    <text class="logo-title">优选商城</text>
+    <text class="logo-subtitle">品质生活，从这里开始</text>
+  </view>
+
+  <!-- Tab 切换 -->
+  <view class="auth-tabs">
+    <view class="auth-tab {{isLoginTab ? 'active' : ''}}" bindtap="switchToLogin">
+      <text>登录</text>
+      <view class="auth-tab-indicator" wx:if="{{isLoginTab}}"></view>
+    </view>
+    <view class="auth-tab {{!isLoginTab ? 'active' : ''}}" bindtap="switchToRegister">
+      <text>注册</text>
+      <view class="auth-tab-indicator" wx:if="{{!isLoginTab}}"></view>
+    </view>
+  </view>
+
+  <!-- 登录表单 -->
+  <view class="auth-form" wx:if="{{isLoginTab}}">
+    <view class="form-group">
+      <view class="form-input-wrap">
+        <text class="form-icon">👤</text>
+        <input class="form-input" type="text" placeholder="请输入用户名"
+          value="{{loginForm.username}}" bindinput="onLoginInput" data-field="username"
+          maxlength="50" />
+      </view>
+    </view>
+    <view class="form-group">
+      <view class="form-input-wrap">
+        <text class="form-icon">🔒</text>
+        <input class="form-input" type="{{showLoginPassword ? 'text' : 'password'}}" placeholder="请输入密码"
+          value="{{loginForm.password}}" bindinput="onLoginInput" data-field="password" />
+        <text class="form-toggle-pwd" bindtap="toggleLoginPassword">
+          {{showLoginPassword ? '🙈' : '👁️'}}
+        </text>
+      </view>
+    </view>
+
+    <!-- 错误提示 -->
+    <view class="form-error" wx:if="{{loginError}}">
+      <text>{{loginError}}</text>
+    </view>
+
+    <button class="btn-primary auth-submit {{loginLoading ? 'disabled' : ''}}"
+      disabled="{{loginLoading}}" bindtap="onLogin">
+      <text wx:if="{{loginLoading}}">登录中...</text>
+      <text wx:else>登录</text>
+    </button>
+  </view>
+
+  <!-- 注册表单 -->
+  <view class="auth-form" wx:else>
+    <view class="form-group">
+      <view class="form-input-wrap">
+        <text class="form-icon">👤</text>
+        <input class="form-input" type="text" placeholder="用户名（至少3个字符）"
+          value="{{registerForm.username}}" bindinput="onRegisterInput" data-field="username"
+          maxlength="50" />
+      </view>
+    </view>
+    <view class="form-group">
+      <view class="form-input-wrap">
+        <text class="form-icon">🔒</text>
+        <input class="form-input" type="{{showRegisterPassword ? 'text' : 'password'}}" placeholder="密码（至少6个字符）"
+          value="{{registerForm.password}}" bindinput="onRegisterInput" data-field="password" />
+        <text class="form-toggle-pwd" bindtap="toggleRegisterPassword">
+          {{showRegisterPassword ? '🙈' : '👁️'}}
+        </text>
+      </view>
+    </view>
+    <view class="form-group">
+      <view class="form-input-wrap">
+        <text class="form-icon">🔐</text>
+        <input class="form-input" type="{{showConfirmPassword ? 'text' : 'password'}}" placeholder="确认密码"
+          value="{{registerForm.confirmPassword}}" bindinput="onRegisterInput" data-field="confirmPassword" />
+        <text class="form-toggle-pwd" bindtap="toggleConfirmPassword">
+          {{showConfirmPassword ? '🙈' : '👁️'}}
+        </text>
+      </view>
+    </view>
+
+    <!-- 验证码 -->
+    <view class="form-group" wx:if="{{captchaSrc}}">
+      <view class="form-input-wrap captcha-wrap">
+        <text class="form-icon">📷</text>
+        <input class="form-input" type="text" placeholder="验证码"
+          value="{{registerForm.captcha}}" bindinput="onRegisterInput" data-field="captcha" />
+        <image class="captcha-image" src="{{captchaSrc}}" mode="aspectFit" />
+      </view>
+    </view>
+
+    <!-- 用户协议 -->
+    <view class="form-agreement">
+      <view class="checkbox {{agreed ? 'checked' : ''}}" bindtap="toggleAgreed">
+        <text wx:if="{{agreed}}">✓</text>
+      </view>
+      <text class="agreement-text">我已阅读并同意 <text class="agreement-link">用户协议</text> 和 <text class="agreement-link">隐私政策</text></text>
+    </view>
+
+    <!-- 错误提示 -->
+    <view class="form-error" wx:if="{{registerError}}">
+      <text>{{registerError}}</text>
+    </view>
+
+    <button class="btn-primary auth-submit {{registerLoading ? 'disabled' : ''}}"
+      disabled="{{registerLoading}}" bindtap="onRegister">
+      <text wx:if="{{registerLoading}}">注册中...</text>
+      <text wx:else>注册</text>
+    </button>
+  </view>
+</view>

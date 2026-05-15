@@ -1,0 +1,6 @@
+.category-grid { display: flex; flex-wrap: wrap; padding: 0 24rpx; }
+.category-item { width: 25%; text-align: center; padding: 16rpx 0; }
+.cat-name { font-size: 24rpx; margin-top: 4rpx; }
+.rec-img { width: 220rpx; height: 220rpx; background: #f0f0f0; }
+.rec-name { font-size: 24rpx; padding: 10rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rec-price { color: #e74c3c; font-size: 28rpx; font-weight: bold; padding: 0 10rpx 10rpx; }

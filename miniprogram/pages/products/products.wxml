@@ -1,0 +1,107 @@
+
+<wxs module="img" src="../../utils/image.wxs" />
+<!-- pages/products/products.wxml -->
+<view class="page-container">
+  <!-- 搜索栏 -->
+  <view class="search-box">
+    <view class="search-input-wrap">
+      <text class="search-icon">🔍</text>
+      <input class="search-input" type="text" placeholder="搜索商品" value="{{keyword}}"
+        bindinput="onInputChange" bindconfirm="onSearch" confirm-type="search" />
+      <text class="search-clear" wx:if="{{showClear}}" bindtap="onClear">✕</text>
+    </view>
+    <text class="search-btn" wx:if="{{keyword}}" bindtap="onSearch">搜索</text>
+  </view>
+
+  <!-- 搜索历史 -->
+  <view class="search-history card" wx:if="{{!isSearching && searchHistory.length > 0}}">
+    <view class="flex-between">
+      <text class="history-title">搜索历史</text>
+      <text class="history-clear" bindtap="clearSearchHistory">清除</text>
+    </view>
+    <view class="keywords-wrap">
+      <text class="keyword-tag" wx:for="{{searchHistory}}" wx:key="index"
+        bindtap="onHistoryTap" data-keyword="{{item}}">{{item}}</text>
+    </view>
+  </view>
+
+  <!-- 分类导航（水平滚动） -->
+  <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="{{false}}"
+    wx:if="{{!isSearching}}">
+    <view class="category-list">
+      <view class="category-item {{activeCategoryId === item.id ? 'active' : ''}}"
+        wx:for="{{categories}}" wx:key="id"
+        bindtap="onCategoryTap" data-id="{{item.id}}">
+        <text>{{item.name}}</text>
+        <view class="category-indicator" wx:if="{{activeCategoryId === item.id}}"></view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 排序栏 -->
+  <view class="sort-bar" wx:if="{{!isSearching}}">
+    <view class="sort-list">
+      <view class="sort-item {{activeSort === item.id ? 'active' : ''}}"
+        wx:for="{{sortOptions}}" wx:key="id"
+        bindtap="onSortTap" data-sort="{{item.id}}">
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 搜索结果提示 -->
+  <view class="search-result-info" wx:if="{{isSearching && pageLoaded}}">
+    <text>搜索"{{keyword}}" 共 {{total}} 件商品</text>
+  </view>
+
+  <!-- 商品网格 -->
+  <view class="products-content" wx:if="{{!isLoading && pageLoaded && !error}}">
+    <view class="product-grid">
+      <view class="product-card" wx:for="{{products}}" wx:key="id"
+        bindtap="onProductTap" data-id="{{item.id}}">
+        <image class="product-image" src="{{item.image || 'https://picsum.photos/seed/p' + item.id + '/400/400'}}" mode="aspectFill" />
+        <view class="product-info">
+          <text class="product-name text-ellipsis-2">{{item.name}}</text>
+          <view class="product-tags" wx:if="{{item.tags}}">
+            <text class="product-tag" wx:for="{{item.tags}}" wx:key="index">{{item}}</text>
+          </view>
+          <view class="product-price-row">
+            <text class="price">¥<text class="price-int">{{item.price}}</text></text>
+            <text wx:if="{{item.originalPrice && item.originalPrice > item.price}}" class="original-price">¥{{item.originalPrice}}</text>
+          </view>
+          <view class="product-meta">
+            <text class="product-sales">已售 {{item.sales || item.salesCount || 0}}</text>
+            <text class="product-rating" wx:if="{{item.rating}}">★ {{item.rating}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{isLoadingMore}}">
+      <text>加载更多...</text>
+    </view>
+    <view class="load-more" wx:elif="{{!hasMore && products.length > 0}}">
+      <text>— 已显示全部商品 —</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="load-more" wx:if="{{isLoading && !pageLoaded}}">
+    <text>正在加载...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{pageLoaded && !isLoading && products.length === 0 && !error}}">
+    <image src="https://picsum.photos/seed/empty/240/240" mode="aspectFit" />
+    <text>暂无商品</text>
+  </view>
+
+  <!-- 错误状态 -->
+  <view class="empty-state" wx:if="{{pageLoaded && error}}">
+    <image src="https://picsum.photos/seed/error/240/240" mode="aspectFit" />
+    <text>{{error}}</text>
+    <button class="btn-secondary" style="margin-top: 30rpx;" bindtap="onRetry">重新加载</button>
+  </view>
+
+  <view class="safe-area-bottom"></view>
+</view>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑商品 - 商家中心 - 在线购物系统</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="navbar desktop-nav">
+    <div class="nav-container">
+        <a href="/" class="nav-brand">线上购物与交易系统</a>
+        <button class="hamburger-btn" onclick="toggleMobileMenu()">☰</button>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="/merchant/dashboard">商家中心</a></li>
+            <li class="nav-item active"><a href="javascript:">编辑商品</a></li>
+            <li class="nav-item"><a href="/product/list">商品市场</a></li>
+            <li class="nav-item"><a href="/logout">退出</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="mobile-dropdown" id="mobileDropdown">
+    <a href="/">首页</a>
+    <a href="/merchant/dashboard">商家中心</a>
+    <a href="/merchant/product/add">添加商品</a>
+    <a href="/product/list">商品市场</a>
+    <a href="/logout">退出</a>
+</div>
+
+<div class="container">
+    <a href="/merchant/dashboard" class="btn-back">返回商家中心</a>
+    <h2>编辑商品</h2>
+
+    <div id="message" class="message"></div>
+
+    <form id="productForm">
+        <input type="hidden" id="productId" th:value="${product.id}">
+
+        <div class="form-row">
+            <div class="full">
+                <label for="name">商品名称</label>
+                <input type="text" id="name" th:value="${product.name}" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div>
+                <label for="price">价格 (元)</label>
+                <input type="number" id="price" step="0.01" min="0.01" th:value="${product.price}" required>
+            </div>
+            <div>
+                <label for="originalPrice">原价 (元)</label>
+                <input type="number" id="originalPrice" step="0.01" min="0" th:value="${product.originalPrice}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div>
+                <label for="stock">库存</label>
+                <input type="number" id="stock" min="0" th:value="${product.stock}">
+            </div>
+            <div>
+                <label for="categoryId">商品分类</label>
+                <select id="categoryId">
+                    <option value="">请选择分类</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div>
+                <label for="brand">品牌</label>
+                <input type="text" id="brand" th:value="${product.brand}">
+            </div>
+            <div>
+                <label for="model">型号</label>
+                <input type="text" id="model" th:value="${product.model}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div>
+                <label for="imageUrl">商品图片URL</label>
+                <input type="text" id="imageUrl" th:value="${product.imageUrl}">
+            </div>
+            <div>
+                <label for="weight">重量 (kg)</label>
+                <input type="number" id="weight" step="0.01" min="0" th:value="${product.weight}">
+            </div>
+        </div>
+        <div class="form-row full">
+            <label for="description">商品描述</label>
+            <textarea id="description" rows="4" th:text="${product.description}"></textarea>
+        </div>
+        <button type="button" class="btn-submit" onclick="updateProduct()">保存修改</button>
+    </form>
+</div>
+
+<script>
+    function updateProduct() {
+        var data = {
+            id: parseInt(document.getElementById('productId').value),
+            name: document.getElementById('name').value.trim(),
+            description: document.getElementById('description').value.trim(),
+            price: parseFloat(document.getElementById('price').value) || 0,
+            originalPrice: parseFloat(document.getElementById('originalPrice').value) || null,
+            stock: parseInt(document.getElementById('stock').value) || 0,
+            categoryId: parseInt(document.getElementById('categoryId').value) || null,
+            brand: document.getElementById('brand').value.trim(),
+            model: document.getElementById('model').value.trim(),
+            imageUrl: document.getElementById('imageUrl').value.trim(),
+            weight: parseFloat(document.getElementById('weight').value) || null
+        };
+
+        if (!data.name) { showMessage('请输入商品名称', 'error'); return; }
+        if (data.price <= 0) { showMessage('请输入有效价格', 'error'); return; }
+
+        var btn = document.querySelector('.btn-submit');
+        btn.disabled = true;
+        btn.textContent = '保存中...';
+
+        fetch('/merchant/product/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+            if (res.success) {
+                showMessage('商品更新成功！', 'success');
+            } else {
+                showMessage('更新失败：' + res.message, 'error');
+            }
+            btn.disabled = false;
+            btn.textContent = '保存修改';
+        })
+        .catch(function() {
+            showMessage('网络错误，请重试', 'error');
+            btn.disabled = false;
+            btn.textContent = '保存修改';
+        });
+    }
+
+    function showMessage(msg, type) {
+        var el = document.getElementById('message');
+        el.textContent = msg;
+        el.className = 'message ' + type;
+    }
+
+    function toggleMobileMenu() {
+        var menu = document.getElementById('mobileDropdown');
+        if (menu) menu.classList.toggle('show');
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        var menu = document.getElementById('mobileDropdown');
+        if (!menu) return;
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.hamburger-btn')) return;
+            if (!e.target.closest('.mobile-dropdown')) menu.classList.remove('show');
+        });
+    });
+</script>
+
+<div class="mobile-bottom-nav">
+    <div class="nav-items">
+        <a href="/" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>首页</span>
+        </a>
+        <a href="/merchant/dashboard" class="nav-item">
+            <span class="nav-icon">🏪</span>
+            <span>商家</span>
+        </a>
+        <a href="/merchant/product/add" class="nav-item">
+            <span class="nav-icon">➕</span>
+            <span>添加</span>
+        </a>
+        <a href="/product/list" class="nav-item">
+            <span class="nav-icon">📦</span>
+            <span>商品</span>
+        </a>
+        <a href="/order/list" class="nav-item">
+            <span class="nav-icon">📋</span>
+            <span>订单</span>
+        </a>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商家中心 - 线上购物与交易系统</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="navbar desktop-nav">
+    <div class="nav-container">
+        <a href="/" class="nav-brand">线上购物与交易系统</a>
+        <button class="hamburger-btn" onclick="toggleMobileMenu()">☰</button>
+        <ul class="nav-menu">
+            <li class="nav-item active"><a href="/merchant/dashboard">商家中心</a></li>
+            <li class="nav-item"><a href="/merchant/product/add">添加商品</a></li>
+            <li class="nav-item"><a href="/product/list">商品市场</a></li>
+            <li class="nav-item"><a href="/logout">退出</a></li>
+        </ul>
+    </div>
+</div>
+
+<!-- 移动端下拉菜单 -->
+<div class="mobile-dropdown" id="mobileDropdown">
+    <a href="/">首页</a>
+    <a href="/merchant/dashboard">商家中心</a>
+    <a href="/merchant/product/add">添加商品</a>
+    <a href="/product/list">商品市场</a>
+    <a href="/logout">退出</a>
+</div>
+
+<div class="container">
+    <h2>商家中心</h2>
+    <p style="color: #666; margin-bottom: 20px;">欢迎，<strong th:text="${username}">商家</strong>！管理您的商品。</p>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-number" th:text="${#lists.size(products)}">0</div>
+            <div style="color: #666; font-size: 13px;">我的商品</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #d4edda, #c3e6cb);">
+            <div class="stat-number" style="color: #27ae60;" th:text="${#lists.size(products.?[status == 1])}">0</div>
+            <div style="color: #666; font-size: 13px;">在售中</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #cce5ff, #b8d4ff);">
+            <div class="stat-number" style="color: #1976d2;" th:text="${#aggregates.sum(products.![salesCount])}">0</div>
+            <div style="color: #666; font-size: 13px;">总销量</div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <a href="/merchant/product/add" class="btn btn-add">+ 添加商品</a>
+        <a href="/order/list" class="btn">查看订单</a>
+        <a href="/product/list" class="btn" style="background: linear-gradient(135deg, #3498db, #2980b9);">浏览市场</a>
+    </div>
+
+    <!-- 销售数据分析 -->
+    <div class="analytics-section" id="analytics-section" style="display:none;">
+        <h2 style="margin-bottom:5px;">销售概览</h2>
+        <p style="color:#666;font-size:14px;">基于AI分析的商品销售数据</p>
+        <div class="analytics-grid" id="merchant-stats">
+            <div class="loading-text">加载分析数据...</div>
+        </div>
+    </div>
+
+    <!-- Top商品排行 -->
+    <div class="analytics-section" id="top-products-section" style="display:none;">
+        <h2 style="margin-bottom:5px;">销量排行</h2>
+        <p style="color:#666;font-size:14px;">您的商品销售排行</p>
+        <div id="top-products-list">
+            <div class="loading-text">加载排行数据...</div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>商品名称</th>
+                <th>价格</th>
+                <th>库存</th>
+                <th>销量</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="product : ${products}">
+                <td th:text="${product.id}">1</td>
+                <td><a th:href="@{/product/detail/{id}(id=${product.id})}" th:text="${product.name}" style="color: #667eea; text-decoration: none;">商品</a></td>
+                <td>¥<span th:text="${product.price}">0.00</span></td>
+                <td th:text="${product.stock}">0</td>
+                <td th:text="${product.salesCount}">0</td>
+                <td>
+                    <span th:if="${product.status == 1}" class="status-badge status-active">上架</span>
+                    <span th:unless="${product.status == 1}" class="status-badge status-inactive">下架</span>
+                </td>
+                <td>
+                    <a th:href="@{/merchant/product/edit/{id}(id=${product.id})}" class="btn btn-sm" style="background: #3498db;">编辑</a>
+                    <button class="btn btn-sm" style="background: #e74c3c;" th:onclick="'deleteProduct(' + ${product.id} + ')'">删除</button>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(products)}">
+                <td colspan="7" style="text-align: center; padding: 40px; color: #999;">暂无商品，点击上方"添加商品"开始销售</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function deleteProduct(id) {
+        if (!confirm('确定要删除该商品吗？')) return;
+        fetch('/merchant/product/delete/' + id, { method: 'DELETE' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            alert(data.message);
+            if (data.success) location.reload();
+        });
+    }
+
+    // 加载商家销售数据
+    fetch('/api/analytics/merchant-stats')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success && data.data) {
+                document.getElementById('analytics-section').style.display = 'block';
+                var s = data.data;
+                document.getElementById('merchant-stats').innerHTML =
+                    '<div class="analytics-card"><div class="analytics-value">¥' + (s.totalRevenue || 0).toFixed(2) + '</div><div class="analytics-label">总销售额</div></div>' +
+                    '<div class="analytics-card"><div class="analytics-value">' + (s.totalOrders || 0) + '</div><div class="analytics-label">总订单数</div></div>' +
+                    '<div class="analytics-card"><div class="analytics-value">' + (s.productCount || 0) + '</div><div class="analytics-label">在售商品</div></div>';
+            }
+        })
+        .catch(function() {});
+
+    // 加载商家Top商品
+    fetch('/api/analytics/merchant-top-products?limit=5')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success && data.data && data.data.length > 0) {
+                document.getElementById('top-products-section').style.display = 'block';
+                var html = '<table><thead><tr><th>#</th><th>商品名称</th><th>价格</th><th>销量</th><th>浏览量</th></tr></thead><tbody>';
+                data.data.forEach(function(p, i) {
+                    html += '<tr>' +
+                        '<td>' + (i+1) + '</td>' +
+                        '<td><a href="/product/detail/' + (p.id || 0) + '" style="color:#667eea;text-decoration:none;">' + (p.name || '') + '</a></td>' +
+                        '<td>¥' + (p.price || 0) + '</td>' +
+                        '<td>' + (p.sales_count || 0) + '</td>' +
+                        '<td>' + (p.view_count || 0) + '</td>' +
+                        '</tr>';
+                });
+                html += '</tbody></table>';
+                document.getElementById('top-products-list').innerHTML = html;
+            }
+        })
+        .catch(function() {});
+
+    function toggleMobileMenu() {
+        var menu = document.getElementById('mobileDropdown');
+        if (menu) menu.classList.toggle('show');
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        var menu = document.getElementById('mobileDropdown');
+        if (!menu) return;
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.hamburger-btn')) return;
+            if (!e.target.closest('.mobile-dropdown')) menu.classList.remove('show');
+        });
+    });
+</script>
+
+<!-- 移动端底部导航 -->
+<div class="mobile-bottom-nav">
+    <div class="nav-items">
+        <a href="/" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>首页</span>
+        </a>
+        <a href="/merchant/dashboard" class="nav-item active">
+            <span class="nav-icon">🏪</span>
+            <span>商家</span>
+        </a>
+        <a href="/merchant/product/add" class="nav-item">
+            <span class="nav-icon">➕</span>
+            <span>添加</span>
+        </a>
+        <a href="/product/list" class="nav-item">
+            <span class="nav-icon">📦</span>
+            <span>商品</span>
+        </a>
+        <a href="/order/list" class="nav-item">
+            <span class="nav-icon">📋</span>
+            <span>订单</span>
+        </a>
+    </div>
+</div>
+</body>
+</html>

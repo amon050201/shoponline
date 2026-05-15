@@ -1,0 +1,1 @@
+var api=require('../../utils/api');Page({data:{info:null},onLoad:function(opts){var t=this,oid=parseInt(opts.orderId);api.getLogistics(oid).then(function(r){t.setData({info:r.data||{}});}).catch(function(){});}});

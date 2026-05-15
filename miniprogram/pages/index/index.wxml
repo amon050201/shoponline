@@ -1,0 +1,30 @@
+<wxs module="img" src="../../utils/image.wxs" />
+<view class="page-wrap">
+  <view class="search-bar">
+    <input placeholder="搜索商品" bindtap="goSearch" disabled/>
+    <button bindtap="goSearch">搜索</button>
+  </view>
+  <view class="banner-wrap" wx:if="{{banners.length > 0}}">
+    <swiper autoplay circular indicator-dots>
+      <swiper-item wx:for="{{banners}}" wx:key="id">
+        <image src="{{img.img(item.imageUrl)}}" mode="aspectFill"/>
+      </swiper-item>
+    </swiper>
+  </view>
+  <view class="section-title">商品分类</view>
+  <view class="category-grid">
+    <view wx:for="{{categories}}" wx:key="id" class="category-item" data-id="{{item.id}}" bindtap="goCategory">
+      <text class="cat-name">{{item.name}}</text>
+    </view>
+  </view>
+  <view wx:if="{{trending.length > 0}}">
+    <view class="section-title">热门推荐</view>
+    <scroll-view scroll-x class="recommend-scroll">
+      <view wx:for="{{trending}}" wx:key="id" class="recommend-item" data-id="{{item.id}}" bindtap="goProduct">
+        <image src="{{img.img(item.imageUrl||item.image)}}" mode="aspectFill" class="rec-img"/>
+        <view class="rec-name">{{item.name}}</view>
+        <view class="rec-price">¥{{item.price}}</view>
+      </view>
+    </scroll-view>
+  </view>
+</view>

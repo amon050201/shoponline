@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>以物易物 - 线上购物与交易系统</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="navbar desktop-nav">
+        <h2>以物易物市场</h2>
+        <div>
+            <span th:text="${username}">用户</span> |
+            <a href="/" style="color: white;">返回首页</a> |
+            <a href="/exchange/my-orders" style="color: white;">我的交换</a> |
+            <a href="/logout" style="color: white;">退出</a>
+        </div>
+    </div>
+
+    <!-- 移动端顶部栏 -->
+    <div class="mobile-top-bar">
+        <a href="/" class="back-btn">←</a>
+        <span class="page-title">以物易物</span>
+        <a href="/exchange/my-orders" class="right-action">我的</a>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>发现可交换的好物</h1>
+            <p>选择您心仪的商品，用您的闲置物品进行交换，差价多退少补</p>
+        </div>
+
+        <div class="product-grid">
+            <div th:each="product : ${products}" class="product-card">
+                <div class="product-image">📦</div>
+                <div class="product-info">
+                    <div class="product-name" th:text="${product.name}">商品名称</div>
+                    <div class="product-price">
+                        ¥<span th:text="${product.price}">0.00</span>
+                    </div>
+                    <div class="product-desc" th:text="${product.description}">商品描述</div>
+                    <a th:href="@{/exchange/request/{id}(id=${product.id})}" class="btn-exchange">
+                        发起交换
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(products)}" class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <h3>暂无可交换商品</h3>
+            <p>请稍后再来查看</p>
+        </div>
+    </div>
+
+    <!-- 移动端底部导航 -->
+    <div class="mobile-bottom-nav">
+        <div class="nav-items">
+            <a href="/" class="nav-item">
+                <span class="nav-icon">🏠</span>
+                <span>首页</span>
+            </a>
+            <a href="/product/list" class="nav-item">
+                <span class="nav-icon">📦</span>
+                <span>商品</span>
+            </a>
+            <a href="/cart/view" class="nav-item">
+                <span class="nav-icon">🛒</span>
+                <span>购物车</span>
+            </a>
+            <a href="/order/list" class="nav-item">
+                <span class="nav-icon">📋</span>
+                <span>订单</span>
+            </a>
+            <a href="/" class="nav-item">
+                <span class="nav-icon">👤</span>
+                <span>我的</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

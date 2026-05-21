@@ -104,11 +104,11 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="cart : ${carts}">
+                <tr th:each="cart : ${carts}" th:data-product-id="${cart.product.id}" th:data-product-image="${cart.product.imageUrl}">
                     <td>
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <img th:if="${cart.product.imageUrl}" th:src="${cart.product.imageUrl}" class="item-img" alt="">
-                            <div th:if="${!cart.product.imageUrl}" class="item-img" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">📦</div>
+                            <div th:unless="${cart.product.imageUrl}" class="item-img" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">📦</div>
                             <span th:text="${cart.product.name}">商品名称</span>
                         </div>
                     </td>
@@ -285,10 +285,12 @@
                 var productLink = cells[0].querySelector('span:last-child');
                 var priceText = cells[1].textContent.replace('¥', '');
                 var qty = parseInt(cells[2].textContent);
-                // Try to get product ID from the image alt or data attribute
+                var productId = parseInt(row.getAttribute('data-product-id') || '0');
+                var productImage = row.getAttribute('data-product-image') || '';
                 items.push({
-                    productId: 0,
+                    productId: productId,
                     productName: productLink ? productLink.textContent.trim() : '',
+                    productImage: productImage,
                     price: parseFloat(priceText),
                     quantity: qty
                 });
@@ -349,7 +351,7 @@
         <a href="/product/list" class="nav-item"><span class="nav-icon">📦</span><span>商品</span></a>
         <a href="/cart/view" class="nav-item"><span class="nav-icon">🛒</span><span>购物车</span></a>
         <a href="/order/list" class="nav-item"><span class="nav-icon">📋</span><span>订单</span></a>
-        <a href="/" class="nav-item"><span class="nav-icon">👤</span><span>我的</span></a>
+        <a href="/profile" class="nav-item"><span class="nav-icon">👤</span><span>我的</span></a>
     </div>
 </div>
 </body>

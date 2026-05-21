@@ -96,24 +96,24 @@
     <script>
         async function confirmOrder(orderId) {
             if (!confirm('确认接受这个交换请求吗？')) return;
-            try { const r = await fetch('/exchange/confirm/' + orderId, { method:'POST' }); const d = await r.json(); alert(d.message); if (d.code===200) location.reload(); } catch(e) { alert('操作失败'); }
+            try { const r = await fetch('/exchange/confirm/' + orderId, { method:'POST' }); const d = await r.json(); alert(d.message); if (d.success) location.reload(); } catch(e) { alert('操作失败'); }
         }
         async function rejectOrder(orderId) {
             if (!confirm('确认拒绝这个交换请求吗？')) return;
-            try { const r = await fetch('/exchange/reject/' + orderId, { method:'POST' }); const d = await r.json(); alert(d.message); if (d.code===200) location.reload(); } catch(e) { alert('操作失败'); }
+            try { const r = await fetch('/exchange/reject/' + orderId, { method:'POST' }); const d = await r.json(); alert(d.message); if (d.success) location.reload(); } catch(e) { alert('操作失败'); }
         }
         async function cancelOrder(orderId) {
             if (!confirm('确认取消这个交换订单吗？')) return;
-            try { const r = await fetch('/exchange/cancel/' + orderId, { method:'POST' }); const d = await r.json(); alert(d.message); if (d.code===200) location.reload(); } catch(e) { alert('操作失败'); }
+            try { const r = await fetch('/exchange/cancel/' + orderId, { method:'POST' }); const d = await r.json(); alert(d.message); if (d.success) location.reload(); } catch(e) { alert('操作失败'); }
         }
         async function completeOrder(orderId) {
             if (!confirm('确认交易已完成吗？完成后将无法撤销。')) return;
-            try { const r = await fetch('/exchange/complete/' + orderId, { method:'POST' }); const d = await r.json(); alert(d.message); if (d.code===200) location.reload(); } catch(e) { alert('操作失败'); }
+            try { const r = await fetch('/exchange/complete/' + orderId, { method:'POST' }); const d = await r.json(); alert(d.message); if (d.success) location.reload(); } catch(e) { alert('操作失败'); }
         }
         async function payDifference(orderId) {
             const pm = prompt('请选择支付方式（wechat/alipay）:', 'wechat');
             if (!pm) return;
-            try { const r = await fetch('/exchange/pay/' + orderId + '?paymentMethod=' + pm, { method:'POST' }); const d = await r.json(); alert(d.message); if (d.code===200) location.reload(); } catch(e) { alert('支付失败'); }
+            try { const r = await fetch('/exchange/pay/' + orderId + '?paymentMethod=' + pm, { method:'POST' }); const d = await r.json(); alert(d.message); if (d.success) location.reload(); } catch(e) { alert('支付失败'); }
         }
     </script>
 

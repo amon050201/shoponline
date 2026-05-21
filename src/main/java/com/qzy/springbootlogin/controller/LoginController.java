@@ -42,7 +42,14 @@ public class LoginController {
     public String registerPage() {
         return "pages/register";
     }
-    
+
+    @GetMapping("/profile")
+    public String profilePage(HttpSession session, Model model) {
+        model.addAttribute("username", session.getAttribute("username"));
+        model.addAttribute("roleType", session.getAttribute("roleType"));
+        return "pages/profile";
+    }
+
     @PostMapping("/login")
     public String login(@RequestParam String username, 
                        @RequestParam String password,

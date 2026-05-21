@@ -62,12 +62,14 @@ public class ExchangeOrderServiceImpl implements ExchangeOrderService {
             return Result.error("商品不存在");
         }
 
-        // 验证商品是否属于对应用户
-        if (!initiatorProduct.getMerchantId().equals(order.getInitiatorId().intValue())) {
+        // 验证商品归属（仅当商品有明确归属时校验）
+        if (initiatorProduct.getMerchantId() != null
+                && !initiatorProduct.getMerchantId().equals(order.getInitiatorId().intValue())) {
             return Result.error("发起者商品不属于您");
         }
 
-        if (!receiverProduct.getMerchantId().equals(order.getReceiverId().intValue())) {
+        if (receiverProduct.getMerchantId() != null
+                && !receiverProduct.getMerchantId().equals(order.getReceiverId().intValue())) {
             return Result.error("接收者商品不属于对方");
         }
 
@@ -336,12 +338,6 @@ public class ExchangeOrderServiceImpl implements ExchangeOrderService {
     
     @Override
     public ValuationReport getExchangeValuation(Integer productId, String scenario) {
-        if (valuationService == null) {
-            ValuationReport empty = new ValuationReport();
-            empty.setEstimatedValue(BigDecimal.ZERO);
-            empty.setMarketAnalysis("AI估值服务未配置");
-            return empty;
-        }
         Product product = productMapper.findById(productId);
         if (product == null) {
             ValuationReport empty = new ValuationReport();
@@ -349,12 +345,35 @@ public class ExchangeOrderServiceImpl implements ExchangeOrderService {
             empty.setMarketAnalysis("商品不存在");
             return empty;
         }
-        return valuationService.valuateFromDescription(
-                product.getDescription() != null ? product.getDescription() : product.getName(),
-                product.getBrand() != null ? product.getBrand() : "",
-                product.getModel() != null ? product.getModel() : "",
-                product.getProductCondition() != null ? product.getProductCondition() : "good"
-        );
+        if (valuationService == null) {
+            return buildFallbackValuation(product);
+        }
+        try {
+            ValuationReport report = valuationService.valuateFromDescription(
+                    product.getDescription() != null ? product.getDescription() : product.getName(),
+                    product.getBrand() != null ? product.getBrand() : "",
+                    product.getModel() != null ? product.getModel() : "",
+                    product.getProductCondition() != null ? product.getProductCondition() : "good"
+            );
+            if (report.getEstimatedValue().compareTo(BigDecimal.ZERO) <= 0) {
+                return buildFallbackValuation(product);
+            }
+            return report;
+        } catch (Exception e) {
+            return buildFallbackValuation(product);
+        }
+    }
+
+    private ValuationReport buildFallbackValuation(Product product) {
+        ValuationReport report = new ValuationReport();
+        BigDecimal price = product.getPrice() != null ? product.getPrice() : BigDecimal.ZERO;
+        report.setEstimatedValue(price.multiply(BigDecimal.valueOf(0.85)).setScale(2, java.math.RoundingMode.HALF_UP));
+        report.setMarketRangeLow(price.multiply(BigDecimal.valueOf(0.7)).setScale(2, java.math.RoundingMode.HALF_UP));
+        report.setMarketRangeHigh(price.setScale(2, java.math.RoundingMode.HALF_UP));
+        report.setCondition("good");
+        report.setMarketAnalysis("基于原价" + price + "的统计估值（折旧系数0.85），AI大模型暂未返回有效估值");
+        report.setRecommendation("建议参考同品类商品近期成交价");
+        return report;
     }
 
     @Override

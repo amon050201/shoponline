@@ -70,7 +70,9 @@ public class MerchantController {
             product.setMerchantId(userId.intValue());
             int result = productService.addProduct(product);
             if (result > 0) {
-                return Result.success("商品添加成功");
+                var data = new java.util.HashMap<String, Object>();
+                data.put("id", product.getId());
+                return Result.success("商品添加成功", data);
             } else {
                 return Result.error("商品添加失败");
             }

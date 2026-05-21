@@ -59,22 +59,22 @@ public class OrderController {
      */
     @PostMapping("/confirm")
     public String confirm(@RequestParam(defaultValue = "[]") String cartIdsJson,
-                          @RequestBody(required = false) List<Integer> requestBodyCartIds,
                           HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
             return "redirect:/login";
         }
 
-        List<Integer> cartIds = requestBodyCartIds;
-        if (cartIds == null && cartIdsJson != null && !cartIdsJson.isEmpty()) {
+        List<Integer> cartIds = new ArrayList<>();
+        if (cartIdsJson != null && !cartIdsJson.isEmpty() && !"[]".equals(cartIdsJson)) {
             try {
                 com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
                 cartIds = mapper.readValue(cartIdsJson,
                     new com.fasterxml.jackson.core.type.TypeReference<List<Integer>>() {});
-            } catch (Exception e) { /* ignore */ }
+            } catch (Exception e) {
+                return "redirect:/cart/view";
+            }
         }
-        if (cartIds == null) cartIds = new ArrayList<>();
 
         List<Cart> carts = new ArrayList<>();
         BigDecimal totalAmount = BigDecimal.ZERO;

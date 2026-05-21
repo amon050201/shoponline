@@ -56,14 +56,34 @@ public class PricePredictionServiceImpl implements PricePredictionService {
         result.setMovingAverage7d(ma7);
         result.setMovingAverage30d(ma30);
 
+        // Record initial snapshot if no history
+        if (history.isEmpty()) {
+            recordPriceSnapshot(productId, currentPrice);
+            prices.add(currentPrice);
+        }
+
         // Linear regression for trend prediction
         int n = prices.size();
         if (n < 2) {
+            try {
+                BigDecimal catAvg = productMapper.getAveragePriceByCategory(product.getCategoryId());
+                if (catAvg != null && catAvg.compareTo(BigDecimal.ZERO) > 0) {
+                    double ratio = currentPrice.doubleValue() / catAvg.doubleValue();
+                    result.setTrend(ratio > 1.1 ? "down" : ratio < 0.9 ? "up" : "stable");
+                    result.setConfidence(0.3);
+                    result.setPredictedPrice7d(currentPrice.multiply(BigDecimal.valueOf(0.99)).setScale(2, RoundingMode.HALF_UP));
+                    result.setPredictedPrice30d(currentPrice.multiply(BigDecimal.valueOf(0.97)).setScale(2, RoundingMode.HALF_UP));
+                    result.setPredictedPrice90d(currentPrice.multiply(BigDecimal.valueOf(0.95)).setScale(2, RoundingMode.HALF_UP));
+                    result.setTrendAnalysis("基于同品类均价的统计预测，仅供参考");
+                    return result;
+                }
+            } catch (Exception e) { /* fall through */ }
             result.setTrend("stable");
-            result.setConfidence(0.0);
+            result.setConfidence(0.1);
             result.setPredictedPrice7d(currentPrice);
             result.setPredictedPrice30d(currentPrice);
             result.setPredictedPrice90d(currentPrice);
+            result.setTrendAnalysis("缺乏足够历史数据，预测可信度较低");
             return result;
         }
 

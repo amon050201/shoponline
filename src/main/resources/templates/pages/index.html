@@ -268,7 +268,7 @@
             <span class="nav-icon">📋</span>
             <span>订单</span>
         </a>
-        <a th:if="${session.roleType == 1}" href="/merchant/dashboard" class="nav-item">
+        <a th:if="${session.roleType == 1 or session.roleType == 2}" href="/merchant/dashboard" class="nav-item">
             <span class="nav-icon">🏪</span>
             <span>商家</span>
         </a>
@@ -276,7 +276,7 @@
             <span class="nav-icon">⚙️</span>
             <span>管理</span>
         </a>
-        <a href="/" class="nav-item">
+        <a href="/profile" class="nav-item">
             <span class="nav-icon">👤</span>
             <span>我的</span>
         </a>

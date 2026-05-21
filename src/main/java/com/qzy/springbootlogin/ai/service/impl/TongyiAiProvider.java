@@ -32,9 +32,40 @@ public class TongyiAiProvider implements AiProviderService {
             log.warn("Tongyi API key not configured");
             return fallbackResponse("chat");
         }
+        // Try OpenAI-compatible endpoint first
         try {
             String json = String.format("""
-                    {"model":"%s","input":{"messages":[{"role":"system","content":"%s"},{"role":"user","content":"%s"}]}}""",
+                    {"model":"%s","messages":[{"role":"system","content":"%s"},{"role":"user","content":"%s"}]}""",
+                    config.getTongyi().getModel(),
+                    escapeJson(systemPrompt),
+                    escapeJson(userPrompt));
+
+            Request request = new Request.Builder()
+                    .url("https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions")
+                    .addHeader("Authorization", "Bearer " + apiKey)
+                    .addHeader("Content-Type", "application/json")
+                    .post(RequestBody.create(json, JSON))
+                    .build();
+
+            try (Response resp = client.newCall(request).execute()) {
+                String body = resp.body() != null ? resp.body().string() : "{}";
+                if (!resp.isSuccessful()) {
+                    log.warn("Tongyi compatible API failed ({})", resp.code());
+                    return chatNative(systemPrompt, userPrompt);
+                }
+                return body;
+            }
+        } catch (Exception e) {
+            log.warn("Tongyi compatible endpoint error: {}", e.getMessage());
+            return chatNative(systemPrompt, userPrompt);
+        }
+    }
+
+    private String chatNative(String systemPrompt, String userPrompt) {
+        String apiKey = config.getTongyi().getApiKey();
+        try {
+            String json = String.format("""
+                    {"model":"%s","input":{"messages":[{"role":"system","content":"%s"},{"role":"user","content":"%s"}]},"parameters":{"result_format":"message"}}""",
                     config.getTongyi().getModel(),
                     escapeJson(systemPrompt),
                     escapeJson(userPrompt));
@@ -49,13 +80,13 @@ public class TongyiAiProvider implements AiProviderService {
             try (Response resp = client.newCall(request).execute()) {
                 String body = resp.body() != null ? resp.body().string() : "{}";
                 if (!resp.isSuccessful()) {
-                    log.error("Tongyi API error: {} {}", resp.code(), body);
+                    log.warn("Tongyi native API failed: {}", resp.code());
                     return fallbackResponse("chat");
                 }
                 return body;
             }
         } catch (Exception e) {
-            log.error("Tongyi chat failed", e);
+            log.warn("Tongyi native error: {}", e.getMessage());
             return fallbackResponse("chat");
         }
     }

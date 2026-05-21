@@ -63,12 +63,12 @@
         </div>
         
         <div th:if="${products != null and !products.empty}" class="product-grid">
-            <div th:each="product : ${products}" class="product-card">
+            <div th:each="product : ${products}" class="product-card" th:onclick="'window.location.href=\'/product/detail/' + ${product.id} + '\''">
                 <img th:src="${product.imageUrl != null ? product.imageUrl : '/images/default-product.svg'}"
                      alt="商品图片" class="product-image" onerror="this.src='/images/default-product.svg'"
                      onclick="window.location.href='/product/detail/' + [[${product.id}]]">
                 <div class="product-info">
-                    <div class="product-name" th:text="${product.name}">商品名称</div>
+                    <a th:href="@{/product/detail/{id}(id=${product.id})}" class="product-name" th:text="${product.name}">商品名称</a>
                     <div class="product-price">
                         ¥<span th:text="${product.price}">0.00</span>
                         <span th:if="${product.originalPrice != null}" class="product-original-price">
@@ -79,7 +79,7 @@
                         <span>销量: <span th:text="${product.salesCount}">0</span></span>
                         <span>库存: <span th:text="${product.stock}">0</span></span>
                     </div>
-                    <button class="add-to-cart-btn" th:onclick="'addToCart(' + ${product.id} + ')'">
+                    <button class="add-to-cart-btn" th:onclick="'addToCart(' + ${product.id} + ', event)'">
                         加入购物车
                     </button>
                 </div>
@@ -93,7 +93,8 @@
     </div>
     
     <script>
-        function addToCart(productId) {
+        function addToCart(productId, event) {
+            event.stopPropagation();
             fetch('/cart/add', {
                 method: 'POST',
                 headers: {
@@ -106,7 +107,7 @@
             })
             .then(function(r) { return r.json(); })
             .then(function(data) {
-                if (data.code === 200) {
+                if (data.success) {
                     alert('添加成功！');
                 } else {
                     alert(data.message || '添加失败，请先登录');
@@ -156,7 +157,7 @@
                 <span class="nav-icon">📋</span>
                 <span>订单</span>
             </a>
-            <a href="/" class="nav-item">
+            <a href="/profile" class="nav-item">
                 <span class="nav-icon">👤</span>
                 <span>我的</span>
             </a>

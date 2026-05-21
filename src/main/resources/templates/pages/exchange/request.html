@@ -42,9 +42,38 @@
                         <option th:each="product : ${myProducts}"
                                 th:value="${product.id}"
                                 th:text="${product.name + ' (¥' + product.price + ')'}">
-                            商品名称
                         </option>
+                        <option value="custom">🖊️ 手动输入我的商品...</option>
                     </select>
+                </div>
+
+                <!-- 手动输入商品 -->
+                <div id="customProductForm" style="display:none;padding:12px;background:#fff8e1;border-radius:8px;margin-bottom:12px;">
+                    <div class="form-group">
+                        <label>商品名称 *</label>
+                        <input type="text" id="customName" placeholder="例如：九成新iPhone 15 Pro">
+                    </div>
+                    <div class="form-group">
+                        <label>估价 (¥)</label>
+                        <input type="number" id="customPrice" placeholder="您期望的价值" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>品牌</label>
+                        <input type="text" id="customBrand" placeholder="例如：Apple">
+                    </div>
+                    <div class="form-group">
+                        <label>成色</label>
+                        <select id="customCondition">
+                            <option value="like-new">全新</option>
+                            <option value="good" selected>良好</option>
+                            <option value="fair">一般</option>
+                            <option value="poor">较差</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>商品描述</label>
+                        <textarea id="customDesc" rows="2" placeholder="描述一下您的商品..."></textarea>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -71,13 +100,42 @@
     <script>
         const targetPrice = [[${targetProduct.price}]];
         const targetProductId = [[${targetProduct.id}]];
-        const receiverId = [[${targetProduct.merchantId}]] || 1;
+        const receiverId = [[${targetProduct.merchantId != null ? targetProduct.merchantId : 1}]];
         let aiValuations = {};
 
         document.getElementById('myProductId').addEventListener('change', function() {
-            calculatePriceDiff();
-            loadAiValuation();
+            var isCustom = this.value === 'custom';
+            document.getElementById('customProductForm').style.display = isCustom ? 'block' : 'none';
+            document.getElementById('priceDiffBox').style.display = isCustom ? 'none' : 'block';
+            document.getElementById('recommended-diff').style.display = 'none';
+            document.getElementById('my-valuation').style.display = 'none';
+            if (!isCustom) { calculatePriceDiff(); loadAiValuation(); }
+            if (isCustom) updateCustomValuation();
         });
+
+        // 手动输入商品时触发AI估值
+        function updateCustomValuation() {
+            var name = document.getElementById('customName').value.trim();
+            var brand = document.getElementById('customBrand').value.trim();
+            if (!name) return;
+            var desc = name + (brand ? ' 品牌:' + brand : '') + ' 成色:' + (document.getElementById('customCondition').value || 'good');
+            fetch('/api/ai/valuation/evaluate-from-desc', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ description: desc, condition: document.getElementById('customCondition').value || 'good' })
+            }).then(r => r.json()).then(data => {
+                if (data.success && data.data) {
+                    document.getElementById('my-valuation').style.display = 'block';
+                    document.getElementById('my-valuation').innerHTML = 'AI估值: <strong style="color:#667eea;">¥' + (data.data.estimatedValue || 0) + '</strong>';
+                    if (!document.getElementById('customPrice').value) {
+                        document.getElementById('customPrice').value = (data.data.estimatedValue || 0);
+                    }
+                }
+            }).catch(function(){});
+        }
+        document.getElementById('customName').addEventListener('blur', updateCustomValuation);
+        document.getElementById('customBrand').addEventListener('blur', updateCustomValuation);
+        document.getElementById('customCondition').addEventListener('change', updateCustomValuation);
 
         // 获取目标商品AI估值
         fetch('/exchange/valuation/' + targetProductId)
@@ -160,16 +218,51 @@
         }
 
         async function submitExchange() {
-            const myProductId = document.getElementById('myProductId').value;
-            const receiverAddress = document.getElementById('receiverAddress').value;
-            const initiatorAddress = document.getElementById('initiatorAddress').value;
-            const remark = document.getElementById('remark').value;
-            if (!myProductId) { alert('请选择要交换的商品'); return; }
+            var myProductId = document.getElementById('myProductId').value;
+            var receiverAddress = document.getElementById('receiverAddress').value;
+            var initiatorAddress = document.getElementById('initiatorAddress').value;
+            var remark = document.getElementById('remark').value;
+            if (!myProductId) { alert('请选择或输入您的商品'); return; }
             if (!receiverAddress) { alert('请填写您的收货地址'); return; }
             if (!initiatorAddress) { alert('请填写对方的收货地址'); return; }
+
+            // 手动输入商品：先创建商品
+            if (myProductId === 'custom') {
+                var customName = document.getElementById('customName').value.trim();
+                var customPrice = parseFloat(document.getElementById('customPrice').value) || 0;
+                var customBrand = document.getElementById('customBrand').value.trim();
+                var customCondition = document.getElementById('customCondition').value;
+                var customDesc = document.getElementById('customDesc').value.trim();
+                if (!customName) { alert('请输入您的商品名称'); return; }
+                try {
+                    var createResp = await fetch('/merchant/product/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: customName,
+                            price: customPrice,
+                            brand: customBrand,
+                            productCondition: customCondition,
+                            description: customDesc || customName,
+                            stock: 1,
+                            status: 1
+                        })
+                    });
+                    var createResult = await createResp.json();
+                    if (!createResult.success) { alert('创建商品失败：' + createResult.message); return; }
+                    // product ID is in createResult.data
+                    myProductId = createResult.data ? createResult.data.id : null;
+                    if (!myProductId) { alert('创建商品失败'); return; }
+                } catch (e) {
+                    alert('创建商品失败，请重试'); return;
+                }
+            } else {
+                myProductId = parseInt(myProductId);
+            }
+
             const orderData = {
                 receiverId: receiverId,
-                initiatorProductId: parseInt(myProductId),
+                initiatorProductId: myProductId,
                 receiverProductId: targetProductId,
                 initiatorAddress: initiatorAddress,
                 receiverAddress: receiverAddress,
@@ -182,14 +275,13 @@
                     body: JSON.stringify(orderData)
                 });
                 const result = await response.json();
-                if (result.code === 200) {
+                if (result.success) {
                     alert(result.message);
                     window.location.href = '/exchange/my-orders';
                 } else {
                     alert(result.message);
                 }
             } catch (error) {
-                console.error('Error:', error);
                 alert('提交失败，请重试');
             }
         }

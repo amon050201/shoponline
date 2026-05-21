@@ -106,7 +106,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.code === 200) {
+                if (data.success) {
                     location.reload();
                 } else {
                     alert(data.message || '更新失败');
@@ -148,7 +148,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.code === 200) {
+                if (data.success) {
                     location.reload();
                 } else {
                     alert(data.message || '删除失败');
@@ -253,7 +253,7 @@
                 <span class="nav-icon">📋</span>
                 <span>订单</span>
             </a>
-            <a href="/" class="nav-item">
+            <a href="/profile" class="nav-item">
                 <span class="nav-icon">👤</span>
                 <span>我的</span>
             </a>

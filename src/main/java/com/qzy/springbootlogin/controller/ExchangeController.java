@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -61,10 +62,16 @@ public class ExchangeController {
         if (targetProduct == null) {
             return "redirect:/exchange/market";
         }
-        
-        // 获取我的商品列表
-        List<Product> myProducts = productService.findByMerchantId(userId.intValue());
-        
+
+        // 获取可交换的商品列表（排除目标商品）
+        List<Product> allProducts = productService.findAll();
+        List<Product> myProducts = new ArrayList<>();
+        for (Product p : allProducts) {
+            if (!p.getId().equals(productId)) {
+                myProducts.add(p);
+            }
+        }
+
         model.addAttribute("targetProduct", targetProduct);
         model.addAttribute("myProducts", myProducts);
         model.addAttribute("username", session.getAttribute("username"));

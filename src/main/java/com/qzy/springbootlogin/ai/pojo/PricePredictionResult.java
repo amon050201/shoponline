@@ -10,6 +10,7 @@ public class PricePredictionResult {
     private BigDecimal predictedPrice30d;
     private BigDecimal predictedPrice90d;
     private String trend; // up, down, stable
+    private String trendAnalysis;
     private Double confidence;
     private List<BigDecimal> movingAverage7d;
     private List<BigDecimal> movingAverage30d;
@@ -26,6 +27,8 @@ public class PricePredictionResult {
     public void setPredictedPrice90d(BigDecimal predictedPrice90d) { this.predictedPrice90d = predictedPrice90d; }
     public String getTrend() { return trend; }
     public void setTrend(String trend) { this.trend = trend; }
+    public String getTrendAnalysis() { return trendAnalysis; }
+    public void setTrendAnalysis(String trendAnalysis) { this.trendAnalysis = trendAnalysis; }
     public Double getConfidence() { return confidence; }
     public void setConfidence(Double confidence) { this.confidence = confidence; }
     public List<BigDecimal> getMovingAverage7d() { return movingAverage7d; }

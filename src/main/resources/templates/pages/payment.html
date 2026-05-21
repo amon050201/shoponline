@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>订单支付</title>
+<link rel="stylesheet" th:href="@{/css/style.css}">
+<style>
+.pay-box { max-width:520px; margin:6vh auto; padding:40px; background:#fff; border-radius:20px; box-shadow:0 8px 40px rgba(0,0,0,0.1); text-align:center; }
+.qr-wrap { display:inline-block; padding:20px; border:2px dashed #e0e0e0; border-radius:12px; margin:20px 0; }
+.qr-wrap img { width:200px; height:200px; }
+.countdown { font-size:28px; font-weight:bold; color:#667eea; margin:12px 0; }
+.pay-amount { font-size:36px; font-weight:bold; color:#e74c3c; margin:10px 0; }
+.pay-methods { display:flex; gap:12px; justify-content:center; margin:20px 0; }
+.pay-method { padding:12px 28px; border:2px solid #e0e0e0; border-radius:10px; cursor:pointer; font-size:14px; font-weight:600; transition:all 0.3s; }
+.pay-method.active { border-color:#667eea; background:rgba(102,126,234,0.06); color:#667eea; }
+.success-icon { font-size:80px; animation: bounceIn 0.6s ease; }
+@keyframes bounceIn{0%{transform:scale(0.3);opacity:0}50%{transform:scale(1.08)}70%{transform:scale(0.95)}100%{transform:scale(1);opacity:1}}
+.fade-in{animation:fadeIn 0.5s ease}@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+</style>
+</head>
+<body>
+<div class="pay-box" id="box">
+  <div id="paying" class="fade-in">
+    <h2>订单支付</h2>
+    <div style="color:#999;font-size:13px;margin:8px 0;">订单号: <span id="orderNo">-</span></div>
+    <div class="pay-amount">¥<span id="amount">0.00</span></div>
+    <div class="pay-methods">
+      <div class="pay-method active" data-m="alipay" onclick="sw('alipay')">💙 支付宝</div>
+      <div class="pay-method" data-m="wechat" onclick="sw('wechat')">💚 微信支付</div>
+    </div>
+    <div id="qr" style="display:none;">
+      <div class="qr-wrap"><img id="qrImg" src="" alt="QR"/></div>
+      <div class="countdown" id="timer">05:00</div>
+      <p style="color:#999;font-size:13px;">请使用<span id="mlabel">支付宝</span>扫码</p>
+    </div>
+    <div id="loading" style="padding:30px;"><div class="spinner"></div><p style="color:#999;margin-top:12px;">生成二维码...</p></div>
+    <div style="margin-top:20px;display:flex;gap:12px;justify-content:center;">
+      <a href="/order/list" class="btn btn-ghost btn-sm">返回订单</a>
+      <button class="btn btn-sm" style="background:#43e97b;color:#fff;border:none;" onclick="sim()">模拟支付</button>
+    </div>
+  </div>
+  <div id="done" style="display:none;" class="fade-in">
+    <div class="success-icon">✅</div>
+    <h2 style="color:#2e7d32;">支付成功</h2>
+    <p style="color:#666;">订单已支付，即将为您发货</p>
+    <a href="/order/list" class="btn btn-primary" style="display:inline-block;margin-top:16px;">查看订单</a>
+  </div>
+</div>
+<script>
+const p=new URLSearchParams(location.search);const oid=p.get('orderId')||0;let m='alipay',c=null;
+function sw(v){m=v;document.querySelectorAll('.pay-method').forEach(e=>e.classList.toggle('active',e.dataset.m===v));document.getElementById('mlabel').textContent=v==='alipay'?'支付宝':'微信';go();}
+async function go(){document.getElementById('qr').style.display='none';document.getElementById('loading').style.display='block';
+try{let r=await fetch('/api/payment/create?orderId='+oid+'&paymentMethod='+m,{method:'POST'});let d=await r.json();
+if(d.success){document.getElementById('orderNo').textContent=d.data.orderNo;document.getElementById('amount').textContent=d.data.amount;
+document.getElementById('qrImg').src=d.data.qrCodeUrl;document.getElementById('loading').style.display='none';document.getElementById('qr').style.display='block';tick(300);}
+else{alert(d.message);document.getElementById('loading').style.display='none';}}catch(e){alert('网络错误');document.getElementById('loading').style.display='none';}}
+function tick(s){clearInterval(c);let r=s;function t(){let m=Math.floor(r/60),se=r%60;document.getElementById('timer').textContent=String(m).padStart(2,'0')+':'+String(se).padStart(2,'0');if(r<=0){clearInterval(c);document.getElementById('timer').textContent='二维码已过期';}r--;}t();c=setInterval(t,1000);}
+async function sim(){let no=document.getElementById('orderNo').textContent;await fetch('/api/payment/callback?orderNo='+no+'&transactionId=DEMO'+Date.now(),{method:'POST'});document.getElementById('paying').style.display='none';document.getElementById('done').style.display='block';clearInterval(c);setTimeout(function(){location.href='/order/list';},3000);}
+if(oid)go();
+</script>
+</body>
+</html>

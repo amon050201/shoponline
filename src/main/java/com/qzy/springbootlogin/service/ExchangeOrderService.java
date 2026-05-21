@@ -75,4 +75,9 @@ public interface ExchangeOrderService {
      * 获取带AI估值的订单详情
      */
     ExchangeOrder findByIdWithAiValuation(Integer id);
+
+    ExchangeOrder findByOrderNo(String orderNo);
+    int deleteOrder(Integer id);
+    Double getAveragePriceDifference();
+    int countUserExchanges(Long userId);
 }

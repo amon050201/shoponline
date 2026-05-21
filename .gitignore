@@ -1,29 +1,17 @@
-### IntelliJ IDEA ###
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-
-### Eclipse ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
+target/
+*.class
+*.jar
+*.war
+*.log
+*.msi
+*.tmp
+.idea/
+*.iml
+deploy/app.jar
+cookies.txt
+gh_*.log
+gh_*.txt
+git_*.txt
+test.txt
 .vscode/
-
-### Mac OS ###
 .DS_Store

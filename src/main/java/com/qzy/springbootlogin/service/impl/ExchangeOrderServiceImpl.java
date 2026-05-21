@@ -387,6 +387,26 @@ public class ExchangeOrderServiceImpl implements ExchangeOrderService {
         return order;
     }
 
+    @Override
+    public ExchangeOrder findByOrderNo(String orderNo) {
+        return exchangeOrderMapper.findByOrderNo(orderNo);
+    }
+
+    @Override
+    public int deleteOrder(Integer id) {
+        return exchangeOrderMapper.delete(id);
+    }
+
+    @Override
+    public Double getAveragePriceDifference() {
+        return exchangeOrderMapper.getAveragePriceDifference();
+    }
+
+    @Override
+    public int countUserExchanges(Long userId) {
+        return exchangeOrderMapper.countByInitiatorSince(userId, LocalDateTime.now().minusYears(10));
+    }
+
     /**
      * 生成订单号
      */

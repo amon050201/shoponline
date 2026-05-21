@@ -1,0 +1,38 @@
+<view class="page-wrap" style="display:flex;flex-direction:column;align-items:center;padding:40rpx;min-height:100vh;">
+  <!-- 支付成功 -->
+  <block wx:if="{{paid}}">
+    <view style="font-size:120rpx;margin-top:100rpx;">✅</view>
+    <view style="font-size:36rpx;font-weight:bold;color:#2e7d32;margin:20rpx 0;">支付成功</view>
+    <view style="color:#999;font-size:28rpx;">即将跳转到订单页面...</view>
+  </block>
+
+  <!-- 支付中 -->
+  <block wx:if="{{!paid}}">
+    <view style="font-size:32rpx;font-weight:bold;margin-bottom:8rpx;">订单支付</view>
+    <view style="color:#999;font-size:24rpx;margin-bottom:20rpx;">订单号: {{orderNo || '生成中...'}}</view>
+    <view style="font-size:48rpx;font-weight:bold;color:#e74c3c;margin-bottom:30rpx;">¥{{amount || '0.00'}}</view>
+
+    <!-- 支付方式 -->
+    <view style="display:flex;gap:20rpx;margin-bottom:30rpx;">
+      <view data-method="alipay" bindtap="switchMethod" style="padding:16rpx 36rpx;border-radius:12rpx;font-size:28rpx;font-weight:600;{{paymentMethod==='alipay'?'background:rgba(102,126,234,0.1);border:2rpx solid #667eea;color:#667eea;':'border:2rpx solid #eee;color:#999;'}}">💙 支付宝</view>
+      <view data-method="wechat" bindtap="switchMethod" style="padding:16rpx 36rpx;border-radius:12rpx;font-size:28rpx;font-weight:600;{{paymentMethod==='wechat'?'background:rgba(0,200,100,0.1);border:2rpx solid #07C160;color:#07C160;':'border:2rpx solid #eee;color:#999;'}}">💚 微信支付</view>
+    </view>
+
+    <!-- QR Code -->
+    <view wx:if="{{paying}}" style="padding:60rpx;">
+      <view class="spinner"></view>
+      <view style="color:#999;margin-top:16rpx;font-size:24rpx;">生成二维码中...</view>
+    </view>
+    <view wx:elif="{{qrCodeUrl}}" style="text-align:center;">
+      <view style="border:2rpx dashed #e0e0e0;border-radius:12rpx;padding:20rpx;display:inline-block;">
+        <image src="{{qrCodeUrl}}" mode="aspectFit" style="width:300rpx;height:300rpx;"/>
+      </view>
+      <view style="font-size:32rpx;font-weight:bold;color:#667eea;margin:16rpx 0;">{{countdown}}</view>
+      <view style="color:#999;font-size:24rpx;">请使用{{paymentMethod==='alipay'?'支付宝':'微信支付'}}扫码</view>
+    </view>
+
+    <!-- 模拟支付 -->
+    <button class="btn-primary" bindtap="simulatePay" style="width:100%;margin-top:40rpx;">模拟支付成功（演示）</button>
+    <button class="btn-ghost" bindtap="goOrders" style="width:100%;margin-top:16rpx;">返回订单</button>
+  </block>
+</view>

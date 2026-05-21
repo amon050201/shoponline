@@ -1,7 +1,0 @@
-<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'>
-  <rect width='400' height='400' fill='#f9f9f9' rx='8'/>
-  <rect x='60' y='40' width='280' height='280' rx='20' fill='#4facfe' opacity='0.08'/>
-  <text x='200' y='180' text-anchor='middle' font-size='90'>💻</text>
-  <text x='200' y='280' text-anchor='middle' font-size='24' fill='#555' font-family='sans-serif'>MacBook Pro</text>
-  <text x='200' y='320' text-anchor='middle' font-size='16' fill='#aaa' font-family='sans-serif'>商品图片</text>
-</svg>

@@ -166,7 +166,7 @@
                                 <span class="status-dot" th:classappend="${user.status == 1} ? 'active' : 'inactive'"></span>
                                 <span th:text="${user.status == 1} ? '启用' : '禁用'">启用</span>
                             </td>
-                            <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">-</td>
+                            <td th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm') : '-'}">-</td>
                         </tr>
                     </tbody>
                 </table>

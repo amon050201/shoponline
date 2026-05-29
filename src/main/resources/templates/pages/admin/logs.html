@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
       th:replace="fragments/admin-layout :: layout"
-      th:with="pageTitle='操作日志', activePage='logs', content=~{::page-content}">
+      th:with="pageTitle='操作日志', activePage='logs', content=~{::page-content}, extraHead=~{::admin-head}">
+<head>
+    <link th:fragment="admin-head" rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
 <body>
 <div th:fragment="page-content">
 

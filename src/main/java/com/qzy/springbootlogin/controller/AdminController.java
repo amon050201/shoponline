@@ -46,6 +46,9 @@ public class AdminController {
             return "redirect:/login";
         }
 
+        model.addAttribute("pageTitle", "控制台");
+        model.addAttribute("activePage", "dashboard");
+
         // 获取所有用户
         List<User> users = userService.list();
         model.addAttribute("users", users);
@@ -95,6 +98,9 @@ public class AdminController {
         if (userId == null || roleType != 2) {
             return "redirect:/login";
         }
+
+        model.addAttribute("pageTitle", "用户管理");
+        model.addAttribute("activePage", "users");
 
         List<User> users = userService.list();
         model.addAttribute("users", users);
@@ -153,6 +159,8 @@ public class AdminController {
         if (userId == null || roleType != 2) {
             return "redirect:/login";
         }
+        model.addAttribute("pageTitle", "操作日志");
+        model.addAttribute("activePage", "logs");
         model.addAttribute("username", session.getAttribute("username"));
         model.addAttribute("roleType", roleType);
         return "pages/admin/logs";

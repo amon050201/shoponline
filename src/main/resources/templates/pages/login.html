@@ -11,7 +11,7 @@
 <div class="login-page">
     <div class="login-card">
         <div class="login-header">
-            <div class="login-logo">&#9709;</div>
+            <div class="brand-dot">S</div>
             <h2>欢迎回来</h2>
             <p>登录您的账户继续购物</p>
         </div>
@@ -22,7 +22,7 @@
 
         <form th:action="@{/login}" method="post">
             <div class="input-group">
-                <span class="input-icon">&#9633;</span>
+                <span class="input-icon">&#9671;</span>
                 <input type="text" id="username" name="username" placeholder="用户名" required autofocus>
             </div>
             <div class="input-group">
@@ -30,16 +30,16 @@
                 <input type="password" id="password" name="password" placeholder="密码" required>
             </div>
             <div class="input-group">
-                <span class="input-icon">&#9645;</span>
+                <span class="input-icon">&#9638;</span>
                 <input type="text" id="captcha" name="captcha" class="captcha-input" placeholder="验证码" required maxlength="4">
                 <img src="/captcha" alt="验证码" class="captcha-img" id="captchaImage" title="点击刷新验证码">
             </div>
 
-            <button type="submit" class="login-btn">登 录</button>
+            <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:4px;">登 录</button>
         </form>
 
         <div class="login-footer">
-            <a th:href="@{/register}">还没有账号？立即注册</a>
+            <a th:href="@{/register}">没有账号？立即注册</a>
             <a th:href="@{/}">返回首页</a>
         </div>
     </div>

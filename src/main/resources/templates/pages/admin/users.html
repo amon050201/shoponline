@@ -1,406 +1,196 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
-      th:replace="fragments/admin-layout :: layout"
-      th:with="pageTitle='用户管理', activePage='users', content=~{::page-content}, extraHead=~{::admin-head}">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link th:fragment="admin-head" rel="stylesheet" th:href="@{/css/admin.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户管理 - 管理后台</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
 </head>
 <body>
-<div th:fragment="page-content">
 
-    <div class="page-header">
-        <h1>用户管理</h1>
-        <p>管理系统中的所有用户账号和角色权限。</p>
-    </div>
-
-    <!-- Toolbar -->
-    <div class="admin-card" style="margin-bottom:16px;">
-        <div class="admin-card-body" style="padding:16px 20px;">
-            <div class="toolbar">
-                <div class="toolbar-left">
-                    <div class="search-box">
-                        <input type="text" id="searchKeyword" placeholder="搜索用户名 / 邮箱 / 手机号..." onkeyup="if(event.key==='Enter')searchUsers()">
-                        <button type="button" class="btn btn-primary" onclick="searchUsers()">搜索</button>
-                    </div>
-                    <select id="filterRole" onchange="searchUsers()" style="padding:8px 12px;border:1px solid var(--admin-border);border-radius:var(--admin-radius);font-size:13px;">
-                        <option value="">全部角色</option>
-                        <option value="0">顾客</option>
-                        <option value="1">商家</option>
-                        <option value="2">管理员</option>
-                    </select>
-                </div>
-                <div class="toolbar-right">
-                    <button type="button" class="btn btn-primary" onclick="showAddModal()">+ 添加用户</button>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="batchDelete()" id="batchDelBtn" style="display:none;">批量删除</button>
-                </div>
+<div class="admin-layout">
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <aside class="admin-sidebar" id="adminSidebar">
+        <a href="/admin/dashboard" class="sidebar-brand"><span class="brand-icon">&#9709;</span>管理后台</a>
+        <div class="sidebar-user">
+            <div class="avatar" th:text="${username != null ? #strings.substring(username, 0, 1) : 'A'}">A</div>
+            <div class="user-info">
+                <div class="user-name" th:text="${username}">管理员</div>
+                <div class="user-role">系统管理员</div>
             </div>
         </div>
-    </div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">主导航</div>
+            <a href="/admin/dashboard"><span class="nav-icon">&#9632;</span>控制台</a>
+            <a href="/admin/users" class="active"><span class="nav-icon">&#9633;</span>用户管理</a>
+            <a href="/admin/logs"><span class="nav-icon">&#9645;</span>操作日志</a>
+            <div class="sidebar-section" style="margin-top:12px;">快捷入口</div>
+            <a href="/product/list"><span class="nav-icon">&#9651;</span>商品管理</a>
+            <a href="/order/list"><span class="nav-icon">&#9644;</span>订单管理</a>
+            <a href="/test"><span class="nav-icon">&#9673;</span>系统测试</a>
+        </nav>
+        <div class="sidebar-footer"><a href="/">&#8592; 返回前台</a></div>
+    </aside>
 
-    <!-- User Table -->
-    <div class="admin-card">
-        <div class="admin-card-body no-padding">
-            <div class="admin-table-wrap">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th style="width:40px;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
-                            <th>ID</th>
-                            <th>用户名</th>
-                            <th>邮箱</th>
-                            <th>手机号</th>
-                            <th>角色</th>
-                            <th>状态</th>
-                            <th>注册时间</th>
-                            <th style="width:220px;">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody id="userTableBody">
-                        <tr><td colspan="9"><div class="loading-text">加载中...</div></td></tr>
-                    </tbody>
-                </table>
+    <div class="admin-main">
+        <header class="admin-topbar">
+            <div class="topbar-left">
+                <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="菜单">&#9776;</button>
+                <div class="breadcrumb"><span class="current">用户管理</span></div>
+            </div>
+            <div class="topbar-right">
+                <span style="font-size:13px;color:var(--admin-text-muted);" th:text="'欢迎，' + ${username}">欢迎，管理员</span>
+                <a href="/logout" class="topbar-btn danger"><span>&#10149;</span> <span>退出登录</span></a>
+            </div>
+        </header>
+        <main class="admin-content">
+
+    <div class="page-header"><h1>用户管理</h1><p>管理系统中的所有用户账号和角色权限。</p></div>
+
+    <div class="admin-card" style="margin-bottom:16px;"><div class="admin-card-body" style="padding:16px 20px;">
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="search-box">
+                    <input type="text" id="searchKeyword" placeholder="搜索用户名 / 邮箱 / 手机号..." onkeyup="if(event.key==='Enter')searchUsers()">
+                    <button type="button" class="btn btn-primary" onclick="searchUsers()">搜索</button>
+                </div>
+                <select id="filterRole" onchange="searchUsers()" style="padding:8px 12px;border:1px solid var(--admin-border);border-radius:var(--admin-radius);font-size:13px;">
+                    <option value="">全部角色</option><option value="0">顾客</option><option value="1">商家</option><option value="2">管理员</option>
+                </select>
+            </div>
+            <div class="toolbar-right">
+                <button type="button" class="btn btn-primary" onclick="showAddModal()">+ 添加用户</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="batchDelete()" id="batchDelBtn" style="display:none;">批量删除</button>
             </div>
         </div>
-    </div>
+    </div></div>
 
-    <!-- Pagination -->
+    <div class="admin-card"><div class="admin-card-body no-padding"><div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead><tr><th style="width:40px;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th><th>ID</th><th>用户名</th><th>邮箱</th><th>手机号</th><th>角色</th><th>状态</th><th>注册时间</th><th style="width:220px;">操作</th></tr></thead>
+            <tbody id="userTableBody"><tr><td colspan="9"><div class="loading-text">加载中...</div></td></tr></tbody>
+        </table>
+    </div></div></div>
+
     <div class="pagination-bar" id="paginationBar"></div>
 
-<!-- Edit User Modal -->
+        </main>
+    </div>
+</div>
+
 <div class="modal-overlay" id="editModal">
     <div class="modal-card">
-        <div class="modal-header">
-            <h3>编辑用户</h3>
-            <button type="button" class="modal-close" onclick="closeModal('editModal')">&times;</button>
-        </div>
+        <div class="modal-header"><h3>编辑用户</h3><button type="button" class="modal-close" onclick="closeModal('editModal')">&times;</button></div>
         <div class="modal-body">
             <input type="hidden" id="editUserId">
-            <div class="admin-form-group">
-                <label>用户名</label>
-                <input type="text" id="editUsername" placeholder="请输入用户名">
-            </div>
-            <div class="admin-form-group">
-                <label>邮箱</label>
-                <input type="email" id="editEmail" placeholder="请输入邮箱（选填）">
-            </div>
-            <div class="admin-form-group">
-                <label>手机号</label>
-                <input type="text" id="editPhone" placeholder="请输入手机号（选填）">
-            </div>
-            <div class="admin-form-group">
-                <label>角色</label>
-                <select id="editRole" style="width:100%;padding:8px 12px;border:1px solid var(--admin-border);border-radius:var(--admin-radius);font-size:14px;">
-                    <option value="0">顾客</option>
-                    <option value="1">商家</option>
-                    <option value="2">管理员</option>
-                </select>
-            </div>
-            <div class="admin-form-group">
-                <label>新密码（留空则不修改）</label>
-                <input type="password" id="editPassword" placeholder="至少6位">
-            </div>
+            <div class="admin-form-group"><label>用户名</label><input type="text" id="editUsername" placeholder="请输入用户名"></div>
+            <div class="admin-form-group"><label>邮箱</label><input type="email" id="editEmail" placeholder="请输入邮箱（选填）"></div>
+            <div class="admin-form-group"><label>手机号</label><input type="text" id="editPhone" placeholder="请输入手机号（选填）"></div>
+            <div class="admin-form-group"><label>角色</label><select id="editRole" style="width:100%;padding:8px 12px;border:1px solid var(--admin-border);border-radius:var(--admin-radius);font-size:14px;"><option value="0">顾客</option><option value="1">商家</option><option value="2">管理员</option></select></div>
+            <div class="admin-form-group"><label>新密码（留空则不修改）</label><input type="password" id="editPassword" placeholder="至少6位"></div>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">取消</button>
-            <button type="button" class="btn btn-primary" onclick="saveUser()">保存</button>
-        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">取消</button><button type="button" class="btn btn-primary" onclick="saveUser()">保存</button></div>
     </div>
 </div>
 
-<!-- Add User Modal -->
 <div class="modal-overlay" id="addModal">
     <div class="modal-card">
-        <div class="modal-header">
-            <h3>添加用户</h3>
-            <button type="button" class="modal-close" onclick="closeModal('addModal')">&times;</button>
-        </div>
+        <div class="modal-header"><h3>添加用户</h3><button type="button" class="modal-close" onclick="closeModal('addModal')">&times;</button></div>
         <div class="modal-body">
-            <div class="admin-form-group">
-                <label>用户名 <span style="color:#ef4444;">*</span></label>
-                <input type="text" id="addUsername" placeholder="3-20个字符">
-            </div>
-            <div class="admin-form-group">
-                <label>密码 <span style="color:#ef4444;">*</span></label>
-                <input type="password" id="addPassword" placeholder="至少6位">
-            </div>
-            <div class="admin-form-group">
-                <label>确认密码 <span style="color:#ef4444;">*</span></label>
-                <input type="password" id="addConfirmPassword" placeholder="再次输入密码">
-            </div>
-            <div class="admin-form-group">
-                <label>邮箱</label>
-                <input type="email" id="addEmail" placeholder="选填">
-            </div>
-            <div class="admin-form-group">
-                <label>手机号</label>
-                <input type="text" id="addPhone" placeholder="选填，11位手机号">
-            </div>
-            <div class="admin-form-group">
-                <label>角色</label>
-                <select id="addRole" style="width:100%;padding:8px 12px;border:1px solid var(--admin-border);border-radius:var(--admin-radius);font-size:14px;">
-                    <option value="0">顾客</option>
-                    <option value="1">商家</option>
-                    <option value="2">管理员</option>
-                </select>
-            </div>
+            <div class="admin-form-group"><label>用户名 <span style="color:#ef4444;">*</span></label><input type="text" id="addUsername" placeholder="3-20个字符"></div>
+            <div class="admin-form-group"><label>密码 <span style="color:#ef4444;">*</span></label><input type="password" id="addPassword" placeholder="至少6位"></div>
+            <div class="admin-form-group"><label>确认密码 <span style="color:#ef4444;">*</span></label><input type="password" id="addConfirmPassword" placeholder="再次输入密码"></div>
+            <div class="admin-form-group"><label>邮箱</label><input type="email" id="addEmail" placeholder="选填"></div>
+            <div class="admin-form-group"><label>手机号</label><input type="text" id="addPhone" placeholder="选填，11位手机号"></div>
+            <div class="admin-form-group"><label>角色</label><select id="addRole" style="width:100%;padding:8px 12px;border:1px solid var(--admin-border);border-radius:var(--admin-radius);font-size:14px;"><option value="0">顾客</option><option value="1">商家</option><option value="2">管理员</option></select></div>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">取消</button>
-            <button type="button" class="btn btn-primary" onclick="addUser()">确认添加</button>
-        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">取消</button><button type="button" class="btn btn-primary" onclick="addUser()">确认添加</button></div>
     </div>
 </div>
 
-<!-- Confirm Modal -->
 <div class="modal-overlay" id="confirmModal">
     <div class="modal-card" style="max-width:400px;">
-        <div class="modal-header">
-            <h3>确认操作</h3>
-            <button type="button" class="modal-close" onclick="closeModal('confirmModal')">&times;</button>
-        </div>
-        <div class="modal-body">
-            <p id="confirmMsg" style="font-size:14px;color:var(--admin-text-secondary);"></p>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeModal('confirmModal')">取消</button>
-            <button type="button" class="btn btn-danger" id="confirmBtn">确认</button>
-        </div>
+        <div class="modal-header"><h3>确认操作</h3><button type="button" class="modal-close" onclick="closeModal('confirmModal')">&times;</button></div>
+        <div class="modal-body"><p id="confirmMsg" style="font-size:14px;color:var(--admin-text-secondary);"></p></div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeModal('confirmModal')">取消</button><button type="button" class="btn btn-danger" id="confirmBtn">确认</button></div>
     </div>
 </div>
 
-<script th:replace="fragments/admin-layout :: sidebar-script"></script>
-<script th:inline="javascript">
-/*<![CDATA[*/
-var currentPage = 1;
-var pageSize = 10;
-var selectedIds = [];
+<script>
+function toggleSidebar(){var s=document.getElementById('adminSidebar'),o=document.getElementById('sidebarOverlay');if(s&&o){s.classList.toggle('open');o.classList.toggle('show')}}
+function closeSidebar(){var s=document.getElementById('adminSidebar'),o=document.getElementById('sidebarOverlay');if(s&&o){s.classList.remove('open');o.classList.remove('show')}}
+document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('.sidebar-nav a').forEach(function(l){l.addEventListener('click',function(){if(window.innerWidth<=768)closeSidebar()})})});
 
-function showToast(msg, type) {
-    type = type || 'info';
-    var t = document.createElement('div');
-    t.className = 'admin-toast ' + type;
-    t.textContent = msg;
-    document.body.appendChild(t);
-    setTimeout(function(){ t.classList.add('hide'); t.addEventListener('animationend', function(){ t.remove(); }); }, 2500);
+var currentPage=1,pageSize=10,selectedIds=[];
+function showToast(msg,type){type=type||'info';var t=document.createElement('div');t.className='admin-toast '+type;t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.classList.add('hide');t.addEventListener('animationend',function(){t.remove()})},2500)}
+function openModal(id){document.getElementById(id).style.display='flex'}
+function closeModal(id){document.getElementById(id).style.display='none'}
+
+function loadUsers(){
+    var kw=document.getElementById('searchKeyword').value.trim();
+    var r=document.getElementById('filterRole').value;
+    var params='?page='+currentPage+'&pageSize='+pageSize;
+    if(kw)params+='&keyword='+encodeURIComponent(kw);
+    if(r!=='')params+='&roleType='+r;
+    fetch('/api/admin/users'+params).then(function(r){return r.json()}).then(function(d){
+        if(!d.success){showToast(d.message||'加载失败','error');return}
+        renderTable(d.data.users);renderPagination(d.data.total,d.data.page,d.data.pageSize)
+    }).catch(function(){showToast('网络错误','error')})
 }
 
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-function loadUsers() {
-    var kw = document.getElementById('searchKeyword').value.trim();
-    var r = document.getElementById('filterRole').value;
-    var params = '?page=' + currentPage + '&pageSize=' + pageSize;
-    if (kw) params += '&keyword=' + encodeURIComponent(kw);
-    if (r !== '') params += '&roleType=' + r;
-
-    fetch('/api/admin/users' + params)
-        .then(function(r){ return r.json(); })
-        .then(function(d){
-            if (!d.success) { showToast(d.message||'加载失败', 'error'); return; }
-            renderTable(d.data.users);
-            renderPagination(d.data.total, d.data.page, d.data.pageSize);
-        })
-        .catch(function(){ showToast('网络错误', 'error'); });
-}
-
-function renderTable(users) {
-    var tbody = document.getElementById('userTableBody');
-    if (!users || users.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">&#9645;</div><p>暂无用户数据</p></div></td></tr>';
-        return;
-    }
-    var html = '';
+function renderTable(users){
+    var tbody=document.getElementById('userTableBody');
+    if(!users||users.length===0){tbody.innerHTML='<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">&#9645;</div><p>暂无用户数据</p></div></td></tr>';return}
+    var html='';
     users.forEach(function(u){
-        var roleLabel = u.roleType===0?'顾客':(u.roleType===1?'商家':'管理员');
-        var roleCls = u.roleType===0?'badge-blue':(u.roleType===1?'badge-green':'badge-purple');
-        var checked = selectedIds.indexOf(u.id) >= 0 ? 'checked' : '';
-        html += '<tr>';
-        html += '<td><input type="checkbox" value="'+u.id+'" '+checked+' onchange="toggleSelect('+u.id+')"></td>';
-        html += '<td>'+u.id+'</td>';
-        html += '<td><strong>'+escapeHtml(u.username)+'</strong></td>';
-        html += '<td>'+escapeHtml(u.email||'-')+'</td>';
-        html += '<td>'+escapeHtml(u.phone||'-')+'</td>';
-        html += '<td><span class="badge '+roleCls+'">'+roleLabel+'</span></td>';
-        html += '<td><span class="status-dot '+(u.status===1?'active':'inactive')+'"></span>'+(u.status===1?'启用':'禁用')+'</td>';
-        html += '<td class="text-sm text-muted">'+(u.createdAt ? u.createdAt.substring(0,16) : '-')+'</td>';
-        html += '<td class="action-cell">';
-        html += '<select class="role-select" onchange="changeRole('+u.id+',this.value)"><option value="0" '+(u.roleType===0?'selected':'')+'>顾客</option><option value="1" '+(u.roleType===1?'selected':'')+'>商家</option><option value="2" '+(u.roleType===2?'selected':'')+'>管理员</option></select>';
-        html += '<button type="button" class="btn btn-sm '+(u.status===1?'btn-secondary':'btn-success')+'" onclick="toggleStatus('+u.id+','+u.status+')">'+(u.status===1?'禁用':'启用')+'</button>';
-        html += '<button type="button" class="btn btn-sm btn-primary" onclick="showEditModal('+u.id+')">编辑</button>';
-        if (u.username !== 'admin') {
-            html += '<button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('+u.id+',\''+escapeHtml(u.username)+'\')">删除</button>';
-        }
-        html += '</td></tr>';
+        var rl=u.roleType===0?'顾客':(u.roleType===1?'商家':'管理员');
+        var rc=u.roleType===0?'badge-blue':(u.roleType===1?'badge-green':'badge-purple');
+        var ch=selectedIds.indexOf(u.id)>=0?'checked':'';
+        html+='<tr><td><input type="checkbox" value="'+u.id+'" '+ch+' onchange="toggleSelect('+u.id+')"></td>';
+        html+='<td>'+u.id+'</td><td><strong>'+escapeHtml(u.username)+'</strong></td>';
+        html+='<td>'+escapeHtml(u.email||'-')+'</td><td>'+escapeHtml(u.phone||'-')+'</td>';
+        html+='<td><span class="badge '+rc+'">'+rl+'</span></td>';
+        html+='<td><span class="status-dot '+(u.status===1?'active':'inactive')+'"></span>'+(u.status===1?'启用':'禁用')+'</td>';
+        html+='<td class="text-sm text-muted">'+(u.createdAt?u.createdAt.substring(0,16):'-')+'</td>';
+        html+='<td class="action-cell">';
+        html+='<select class="role-select" onchange="changeRole('+u.id+',this.value)"><option value="0" '+(u.roleType===0?'selected':'')+'>顾客</option><option value="1" '+(u.roleType===1?'selected':'')+'>商家</option><option value="2" '+(u.roleType===2?'selected':'')+'>管理员</option></select>';
+        html+='<button type="button" class="btn btn-sm '+(u.status===1?'btn-secondary':'btn-success')+'" onclick="toggleStatus('+u.id+','+u.status+')">'+(u.status===1?'禁用':'启用')+'</button>';
+        html+='<button type="button" class="btn btn-sm btn-primary" onclick="showEditModal('+u.id+')">编辑</button>';
+        if(u.username!=='admin')html+='<button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('+u.id+',\''+escapeHtml(u.username)+'\')">删除</button>';
+        html+='</td></tr>'
     });
-    tbody.innerHTML = html;
+    tbody.innerHTML=html
 }
 
-function renderPagination(total, page, ps) {
-    var totalPages = Math.ceil(total / ps);
-    var bar = document.getElementById('paginationBar');
-    if (totalPages <= 1) { bar.innerHTML = ''; return; }
-    var html = '<span class="pagination-info">共 '+total+' 条，第 '+page+'/'+totalPages+' 页</span><div class="pagination-btns">';
-    html += '<button type="button" class="btn btn-sm btn-secondary" onclick="goPage('+(page-1)+')" '+(page<=1?'disabled':'')+'>上一页</button>';
-    for (var i=1; i<=totalPages; i++) {
-        if (totalPages<=7 || i===1 || i===totalPages || (i>=page-1 && i<=page+1)) {
-            html += '<button type="button" class="btn btn-sm '+(i===page?'btn-primary':'btn-secondary')+'" onclick="goPage('+i+')">'+i+'</button>';
-        } else if (i===page-2 || i===page+2) {
-            html += '<span class="pagination-ellipsis">...</span>';
-        }
+function renderPagination(total,page,ps){
+    var tp=Math.ceil(total/ps),bar=document.getElementById('paginationBar');
+    if(tp<=1){bar.innerHTML='';return}
+    var h='<span class="pagination-info">共 '+total+' 条，第 '+page+'/'+tp+' 页</span><div class="pagination-btns">';
+    h+='<button type="button" class="btn btn-sm btn-secondary" onclick="goPage('+(page-1)+')" '+(page<=1?'disabled':'')+'>上一页</button>';
+    for(var i=1;i<=tp;i++){
+        if(tp<=7||i===1||i===tp||(i>=page-1&&i<=page+1))h+='<button type="button" class="btn btn-sm '+(i===page?'btn-primary':'btn-secondary')+'" onclick="goPage('+i+')">'+i+'</button>';
+        else if(i===page-2||i===page+2)h+='<span class="pagination-ellipsis">...</span>'
     }
-    html += '<button type="button" class="btn btn-sm btn-secondary" onclick="goPage('+(page+1)+')" '+(page>=totalPages?'disabled':'')+'>下一页</button></div>';
-    bar.innerHTML = html;
+    h+='<button type="button" class="btn btn-sm btn-secondary" onclick="goPage('+(page+1)+')" '+(page>=tp?'disabled':'')+'>下一页</button></div>';
+    bar.innerHTML=h
 }
 
-function goPage(p) { currentPage = p; loadUsers(); }
-function searchUsers() { currentPage = 1; selectedIds = []; updateBatchBtn(); loadUsers(); }
-
-function toggleSelectAll() {
-    var checked = document.getElementById('selectAll').checked;
-    var cbs = document.querySelectorAll('#userTableBody input[type=checkbox]');
-    selectedIds = [];
-    cbs.forEach(function(cb){ cb.checked = checked; if(checked) selectedIds.push(parseInt(cb.value)); });
-    updateBatchBtn();
-}
-
-function toggleSelect(id) {
-    var idx = selectedIds.indexOf(id);
-    if (idx >= 0) selectedIds.splice(idx,1); else selectedIds.push(id);
-    updateBatchBtn();
-}
-
-function updateBatchBtn() {
-    document.getElementById('batchDelBtn').style.display = selectedIds.length > 0 ? '' : 'none';
-}
-
-function batchDelete() {
-    if (selectedIds.length === 0) return;
-    document.getElementById('confirmMsg').textContent = '确定要删除选中的 '+selectedIds.length+' 个用户吗？此操作不可恢复。';
-    document.getElementById('confirmBtn').onclick = function(){
-        fetch('/api/admin/users/batch-delete', {
-            method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ids:selectedIds})
-        }).then(function(r){return r.json()}).then(function(d){
-            showToast(d.message, d.success?'success':'error');
-            if (d.success) { selectedIds = []; updateBatchBtn(); loadUsers(); }
-            closeModal('confirmModal');
-        });
-    };
-    openModal('confirmModal');
-}
-
-function changeRole(userId, roleType) {
-    fetch('/api/admin/users/'+userId+'/role', {
-        method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({roleType:parseInt(roleType)})
-    }).then(function(r){return r.json()}).then(function(d){
-        showToast(d.message, d.success?'success':'error');
-        if (d.success) loadUsers();
-    });
-}
-
-function toggleStatus(userId, currentStatus) {
-    var newStatus = currentStatus === 1 ? 0 : 1;
-    fetch('/api/admin/users/'+userId+'/status', {
-        method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({status:newStatus})
-    }).then(function(r){return r.json()}).then(function(d){
-        showToast(d.message, d.success?'success':'error');
-        if (d.success) loadUsers();
-    });
-}
-
-function showEditModal(userId) {
-    fetch('/api/admin/users/'+userId)
-        .then(function(r){return r.json()})
-        .then(function(d){
-            if (!d.success) { showToast(d.message,'error'); return; }
-            var u = d.data;
-            document.getElementById('editUserId').value = u.id;
-            document.getElementById('editUsername').value = u.username||'';
-            document.getElementById('editEmail').value = u.email||'';
-            document.getElementById('editPhone').value = u.phone||'';
-            document.getElementById('editRole').value = u.roleType||0;
-            document.getElementById('editPassword').value = '';
-            openModal('editModal');
-        });
-}
-
-function saveUser() {
-    var id = document.getElementById('editUserId').value;
-    var data = {
-        username: document.getElementById('editUsername').value.trim(),
-        email: document.getElementById('editEmail').value.trim(),
-        phone: document.getElementById('editPhone').value.trim(),
-        roleType: parseInt(document.getElementById('editRole').value)
-    };
-    var pw = document.getElementById('editPassword').value;
-    if (pw) data.passwordHash = pw;
-
-    fetch('/api/admin/users/'+id, {
-        method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)
-    }).then(function(r){return r.json()}).then(function(d){
-        showToast(d.message, d.success?'success':'error');
-        if (d.success) { closeModal('editModal'); loadUsers(); }
-    });
-}
-
-function showAddModal() {
-    document.getElementById('addUsername').value = '';
-    document.getElementById('addPassword').value = '';
-    document.getElementById('addConfirmPassword').value = '';
-    document.getElementById('addEmail').value = '';
-    document.getElementById('addPhone').value = '';
-    document.getElementById('addRole').value = '0';
-    openModal('addModal');
-}
-
-function addUser() {
-    var username = document.getElementById('addUsername').value.trim();
-    var password = document.getElementById('addPassword').value;
-    var confirmPw = document.getElementById('addConfirmPassword').value;
-    if (!username || username.length<3) { showToast('用户名至少3个字符','error'); return; }
-    if (!password || password.length<6) { showToast('密码至少6位','error'); return; }
-    if (password !== confirmPw) { showToast('两次密码不一致','error'); return; }
-
-    fetch('/api/admin/users', {
-        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({
-            username:username, passwordHash:password,
-            email: document.getElementById('addEmail').value.trim(),
-            phone: document.getElementById('addPhone').value.trim(),
-            roleType: parseInt(document.getElementById('addRole').value), status: 1
-        })
-    }).then(function(r){return r.json()}).then(function(d){
-        showToast(d.message, d.success?'success':'error');
-        if (d.success) { closeModal('addModal'); loadUsers(); }
-    });
-}
-
-function confirmDelete(userId, username) {
-    document.getElementById('confirmMsg').textContent = '确定要删除用户 "'+username+'" 吗？此操作不可恢复。';
-    document.getElementById('confirmBtn').onclick = function(){
-        fetch('/api/admin/users/'+userId, { method:'DELETE' })
-            .then(function(r){return r.json()}).then(function(d){
-                showToast(d.message, d.success?'success':'error');
-                if (d.success) loadUsers();
-                closeModal('confirmModal');
-            });
-    };
-    openModal('confirmModal');
-}
-
-function escapeHtml(s) {
-    if (!s) return '';
-    var d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-}
-
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none';
-});
-
+function goPage(p){currentPage=p;loadUsers()}
+function searchUsers(){currentPage=1;selectedIds=[];updateBatchBtn();loadUsers()}
+function toggleSelectAll(){var c=document.getElementById('selectAll').checked,cbs=document.querySelectorAll('#userTableBody input[type=checkbox]');selectedIds=[];cbs.forEach(function(b){b.checked=c;if(c)selectedIds.push(parseInt(b.value))});updateBatchBtn()}
+function toggleSelect(id){var i=selectedIds.indexOf(id);if(i>=0)selectedIds.splice(i,1);else selectedIds.push(id);updateBatchBtn()}
+function updateBatchBtn(){document.getElementById('batchDelBtn').style.display=selectedIds.length>0?'':'none'}
+function batchDelete(){if(selectedIds.length===0)return;document.getElementById('confirmMsg').textContent='确定要删除选中的 '+selectedIds.length+' 个用户吗？';document.getElementById('confirmBtn').onclick=function(){fetch('/api/admin/users/batch-delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ids:selectedIds})}).then(function(r){return r.json()}).then(function(d){showToast(d.message,d.success?'success':'error');if(d.success){selectedIds=[];updateBatchBtn();loadUsers()}closeModal('confirmModal')})};openModal('confirmModal')}
+function changeRole(uid,rt){fetch('/api/admin/users/'+uid+'/role',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({roleType:parseInt(rt)})}).then(function(r){return r.json()}).then(function(d){showToast(d.message,d.success?'success':'error');if(d.success)loadUsers()})}
+function toggleStatus(uid,cs){var ns=cs===1?0:1;fetch('/api/admin/users/'+uid+'/status',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:ns})}).then(function(r){return r.json()}).then(function(d){showToast(d.message,d.success?'success':'error');if(d.success)loadUsers()})}
+function showEditModal(uid){fetch('/api/admin/users/'+uid).then(function(r){return r.json()}).then(function(d){if(!d.success){showToast(d.message,'error');return}var u=d.data;document.getElementById('editUserId').value=u.id;document.getElementById('editUsername').value=u.username||'';document.getElementById('editEmail').value=u.email||'';document.getElementById('editPhone').value=u.phone||'';document.getElementById('editRole').value=u.roleType||0;document.getElementById('editPassword').value='';openModal('editModal')})}
+function saveUser(){var id=document.getElementById('editUserId').value,data={username:document.getElementById('editUsername').value.trim(),email:document.getElementById('editEmail').value.trim(),phone:document.getElementById('editPhone').value.trim(),roleType:parseInt(document.getElementById('editRole').value)};var pw=document.getElementById('editPassword').value;if(pw)data.passwordHash=pw;fetch('/api/admin/users/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){return r.json()}).then(function(d){showToast(d.message,d.success?'success':'error');if(d.success){closeModal('editModal');loadUsers()}})}
+function showAddModal(){document.getElementById('addUsername').value='';document.getElementById('addPassword').value='';document.getElementById('addConfirmPassword').value='';document.getElementById('addEmail').value='';document.getElementById('addPhone').value='';document.getElementById('addRole').value='0';openModal('addModal')}
+function addUser(){var u=document.getElementById('addUsername').value.trim(),p=document.getElementById('addPassword').value,cp=document.getElementById('addConfirmPassword').value;if(!u||u.length<3){showToast('用户名至少3个字符','error');return}if(!p||p.length<6){showToast('密码至少6位','error');return}if(p!==cp){showToast('两次密码不一致','error');return}fetch('/api/admin/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,passwordHash:p,email:document.getElementById('addEmail').value.trim(),phone:document.getElementById('addPhone').value.trim(),roleType:parseInt(document.getElementById('addRole').value),status:1})}).then(function(r){return r.json()}).then(function(d){showToast(d.message,d.success?'success':'error');if(d.success){closeModal('addModal');loadUsers()}})}
+function confirmDelete(uid,un){document.getElementById('confirmMsg').textContent='确定要删除用户 "'+un+'" 吗？';document.getElementById('confirmBtn').onclick=function(){fetch('/api/admin/users/'+uid,{method:'DELETE'}).then(function(r){return r.json()}).then(function(d){showToast(d.message,d.success?'success':'error');if(d.success)loadUsers();closeModal('confirmModal')})};openModal('confirmModal')}
+function escapeHtml(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+document.addEventListener('click',function(e){if(e.target.classList.contains('modal-overlay'))e.target.style.display='none'});
 loadUsers();
-/*]]>*/
 </script>
-</div>
 </body>
 </html>

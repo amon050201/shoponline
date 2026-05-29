@@ -41,21 +41,24 @@
 </div>
 
 <div class="home-hero">
-    <h1>线上购物与交易系统</h1>
-    <div class="hero-welcome" th:if="${username}">
-        <span>欢迎，<strong th:text="${username}">用户</strong></span>
-        <span class="badge badge-blue" th:if="${session.roleType == 0}">顾客</span>
-        <span class="badge badge-green" th:if="${session.roleType == 1}">商家</span>
-        <span class="badge badge-red" th:if="${session.roleType == 2}">管理员</span>
-    </div>
-    <div class="hero-actions" th:unless="${username}">
-        <a th:href="@{/login}" class="btn btn-primary btn-lg">立即登录</a>
-        <a th:href="@{/register}" class="btn btn-secondary btn-lg">注册账号</a>
+    <div class="hero-content">
+        <h1>线上购物与交易系统</h1>
+        <p class="hero-desc">品质商品 · 诚信交易 · 以物易物</p>
+        <div class="hero-welcome" th:if="${username}">
+            <span>欢迎，<strong th:text="${username}">用户</strong></span>
+            <span class="badge badge-blue" th:if="${session.roleType == 0}">顾客</span>
+            <span class="badge badge-green" th:if="${session.roleType == 1}">商家</span>
+            <span class="badge badge-red" th:if="${session.roleType == 2}">管理员</span>
+        </div>
+        <div class="hero-actions" th:unless="${username}">
+            <a th:href="@{/login}" class="btn btn-primary btn-lg">立即登录</a>
+            <a th:href="@{/register}" class="btn btn-secondary btn-lg">注册账号</a>
+        </div>
     </div>
 </div>
 
 <div class="container">
-    <div class="stats-grid" th:if="${username}">
+    <div class="stats-grid">
         <div class="stat-card"><div class="stat-icon blue">&#9632;</div><div class="stat-info"><div class="stat-value">100+</div><div class="stat-label">优质商品</div></div></div>
         <div class="stat-card"><div class="stat-icon green">&#9645;</div><div class="stat-info"><div class="stat-value">50+</div><div class="stat-label">认证商家</div></div></div>
         <div class="stat-card"><div class="stat-icon purple">&#9671;</div><div class="stat-info"><div class="stat-value">1000+</div><div class="stat-label">活跃用户</div></div></div>
@@ -63,7 +66,7 @@
     </div>
 
     <div class="card" id="trending-section" th:if="${username}">
-        <div class="card-header"><h3>热门推荐</h3></div>
+        <div class="card-header"><h3>热门推荐</h3><a href="/product/list" class="btn btn-sm btn-secondary">查看全部</a></div>
         <div class="product-grid" id="trending-grid"></div>
     </div>
 
@@ -80,12 +83,36 @@
     <div class="card mt-lg">
         <div class="card-header"><h3>快速导航</h3></div>
         <div class="features-grid">
-            <a th:href="@{/product/list}" class="feature-card"><span class="feature-icon">&#9632;</span><span class="feature-title">商品列表</span><span class="feature-desc">浏览各类优质商品</span></a>
-            <a th:if="${session.roleType == 0 or session.roleType == null}" th:href="@{/exchange/market}" class="feature-card"><span class="feature-icon">&#8646;</span><span class="feature-title">以物易物</span><span class="feature-desc">闲置物品交换</span></a>
-            <a th:if="${session.roleType == 0 or session.roleType == null}" th:href="@{/cart/view}" class="feature-card"><span class="feature-icon">&#9645;</span><span class="feature-title">购物车</span><span class="feature-desc">管理待购商品</span></a>
-            <a th:if="${session.roleType == 0 or session.roleType == null}" th:href="@{/order/list}" class="feature-card"><span class="feature-icon">&#9776;</span><span class="feature-title">我的订单</span><span class="feature-desc">查看物流状态</span></a>
-            <a th:if="${session.roleType == 1}" th:href="@{/merchant/dashboard}" class="feature-card"><span class="feature-icon">&#9651;</span><span class="feature-title">商家中心</span><span class="feature-desc">管理商品销售</span></a>
-            <a th:if="${session.roleType == 2}" th:href="@{/admin/dashboard}" class="feature-card"><span class="feature-icon">&#9711;</span><span class="feature-title">管理后台</span><span class="feature-desc">维护平台秩序</span></a>
+            <a th:href="@{/product/list}" class="feature-card">
+                <span class="feature-icon">&#9632;</span>
+                <span class="feature-title">商品列表</span>
+                <span class="feature-desc">浏览各类优质商品</span>
+            </a>
+            <a th:if="${session.roleType == 0 or session.roleType == null}" th:href="@{/exchange/market}" class="feature-card">
+                <span class="feature-icon">&#8646;</span>
+                <span class="feature-title">以物易物</span>
+                <span class="feature-desc">闲置物品交换</span>
+            </a>
+            <a th:if="${session.roleType == 0 or session.roleType == null}" th:href="@{/cart/view}" class="feature-card">
+                <span class="feature-icon">&#9645;</span>
+                <span class="feature-title">购物车</span>
+                <span class="feature-desc">管理待购商品</span>
+            </a>
+            <a th:if="${session.roleType == 0 or session.roleType == null}" th:href="@{/order/list}" class="feature-card">
+                <span class="feature-icon">&#9776;</span>
+                <span class="feature-title">我的订单</span>
+                <span class="feature-desc">查看物流状态</span>
+            </a>
+            <a th:if="${session.roleType == 1}" th:href="@{/merchant/dashboard}" class="feature-card">
+                <span class="feature-icon">&#9651;</span>
+                <span class="feature-title">商家中心</span>
+                <span class="feature-desc">管理商品销售</span>
+            </a>
+            <a th:if="${session.roleType == 2}" th:href="@{/admin/dashboard}" class="feature-card">
+                <span class="feature-icon">&#9711;</span>
+                <span class="feature-title">管理后台</span>
+                <span class="feature-desc">维护平台秩序</span>
+            </a>
         </div>
     </div>
 </div>
@@ -110,7 +137,7 @@
 
     function renderProducts(id,products){
         var c=document.getElementById(id);
-        if(!c||!products||!products.length){if(c)c.innerHTML='<p class="text-muted text-center" style="padding:20px;">暂无推荐</p>';return}
+        if(!c||!products||!products.length){if(c)c.innerHTML='<p class="empty-state"><span class="empty-icon">&#9645;</span>暂无推荐</p>';return}
         c.innerHTML=products.map(function(p){
             return '<a href="/product/detail/'+(p.id||p.product_id||0)+'" class="product-card">'+
                 '<img class="product-image" src="'+(p.image_url||p.imageUrl||'')+'" alt="'+(p.name||'')+'" onerror="this.style.display=\'none\'">'+
@@ -138,5 +165,6 @@
         })
     });
 </script>
+
 </body>
 </html>

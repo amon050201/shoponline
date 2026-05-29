@@ -1188,3 +1188,78 @@ a:hover { color: var(--admin-primary-dark); }
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================
+   Frontend Design Enhancements
+   Focus | Typography | Animations | Print
+   ============================================ */
+
+h1 { font-size: 1.5rem; font-weight: 700; }
+h2 { font-size: 1.25rem; font-weight: 600; }
+h3 { font-size: 1.1rem; font-weight: 600; }
+p { line-height: 1.7; }
+
+input:focus-visible, select:focus-visible, textarea:focus-visible,
+button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--admin-primary-light);
+  outline-offset: 2px;
+}
+.btn:focus-visible { box-shadow: 0 0 0 3px rgba(79,70,229,0.3); }
+
+@keyframes skeletonPulse {
+  0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+  border-radius: var(--admin-radius);
+  min-height: 16px;
+}
+
+.admin-card { transition: box-shadow var(--admin-transition); }
+.admin-card:hover { box-shadow: var(--admin-shadow-md); }
+.admin-table td { vertical-align: middle; }
+.admin-table tbody tr { transition: background-color 0.15s ease; }
+.admin-table tbody tr:hover td { background-color: #f8fafc; }
+
+.stat-card { transition: all 0.25s cubic-bezier(0.4,0,0.2,1); }
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--admin-shadow-md); }
+.quick-link { transition: all 0.25s cubic-bezier(0.4,0,0.2,1); }
+.quick-link:hover { transform: translateY(-2px); }
+.quick-link:active { transform: translateY(0); }
+.sidebar-nav a:active { transform: scale(0.98); }
+
+@keyframes toastIn {
+  from { transform: translateX(-50%) translateY(-16px); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(-50%) translateY(0); }
+  to { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+}
+.admin-toast {
+  animation: toastIn 0.3s cubic-bezier(0.4,0,0.2,1);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.admin-toast.hide { animation: toastOut 0.25s ease forwards; }
+
+input::placeholder, textarea::placeholder { color: var(--admin-text-muted); opacity: 0.7; }
+input[type="date"] { color-scheme: light; cursor: pointer; }
+
+.admin-sidebar::-webkit-scrollbar { width: 4px; }
+.admin-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+
+@media print {
+  .admin-sidebar, .admin-topbar, .sidebar-overlay, .sidebar-toggle, .topbar-btn { display: none !important; }
+  .admin-main { margin-left: 0 !important; }
+  .admin-content { padding: 0 !important; }
+  .admin-card { box-shadow: none !important; border: 1px solid #ddd !important; break-inside: avoid; }
+}
+@media (max-width: 1024px) {
+  .stats-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

@@ -2,8 +2,10 @@ package com.qzy.springbootlogin.controller;
 
 import com.qzy.springbootlogin.mapper.OperationLogMapper;
 import com.qzy.springbootlogin.pojo.OperationLog;
+import com.qzy.springbootlogin.pojo.Product;
 import com.qzy.springbootlogin.pojo.Result;
 import com.qzy.springbootlogin.pojo.User;
+import com.qzy.springbootlogin.service.ProductService;
 import com.qzy.springbootlogin.service.UserService;
 import com.qzy.springbootlogin.util.AdminOperation;
 import jakarta.servlet.http.HttpSession;
@@ -26,6 +28,9 @@ public class AdminController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ProductService productService;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -150,6 +155,80 @@ public class AdminController {
         }
     }
 
+
+    /**
+     * 商品管理页面
+     */
+    @AdminOperation(value = "查看商品管理页面", module = "商品管理")
+    @GetMapping("/products")
+    public String productManagement(HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+        Integer roleType = (Integer) session.getAttribute("roleType");
+        if (userId == null || roleType != 2) return "redirect:/login";
+        model.addAttribute("username", session.getAttribute("username"));
+        model.addAttribute("roleType", roleType);
+        return "pages/admin/products";
+    }
+
+    @AdminOperation(value = "查看商品列表", module = "商品管理")
+    @GetMapping("/api/products")
+    @ResponseBody
+    public Result listProducts(@RequestParam(defaultValue = "1") int page,
+                               @RequestParam(defaultValue = "10") int pageSize,
+                               @RequestParam(required = false) String keyword) {
+        List<Product> all = productService.findAll();
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            all = productService.searchByName(keyword.trim());
+        }
+        int total = all.size();
+        int from = (page - 1) * pageSize;
+        int to = Math.min(from + pageSize, total);
+        List<Product> pageData = total > 0 ? all.subList(Math.min(from, total), to) : all;
+        Map<String, Object> data = new HashMap<>();
+        data.put("products", pageData);
+        data.put("total", total);
+        data.put("page", page);
+        data.put("pageSize", pageSize);
+        return Result.success("获取成功", data);
+    }
+
+    @AdminOperation(value = "添加商品", module = "商品管理")
+    @PostMapping("/api/products")
+    @ResponseBody
+    public Result addProduct(@RequestBody Product product) {
+        try {
+            if (product.getStatus() == null) product.setStatus(1);
+            productService.addProduct(product);
+            return Result.success("添加成功");
+        } catch (Exception e) {
+            return Result.error("添加失败: " + e.getMessage());
+        }
+    }
+
+    @AdminOperation(value = "更新商品", module = "商品管理")
+    @PutMapping("/api/products/{id}")
+    @ResponseBody
+    public Result updateProduct(@PathVariable Integer id, @RequestBody Product product) {
+        try {
+            product.setId(id);
+            productService.updateProduct(product);
+            return Result.success("更新成功");
+        } catch (Exception e) {
+            return Result.error("更新失败: " + e.getMessage());
+        }
+    }
+
+    @AdminOperation(value = "删除商品", module = "商品管理")
+    @DeleteMapping("/api/products/{id}")
+    @ResponseBody
+    public Result deleteProduct(@PathVariable Integer id) {
+        try {
+            productService.deleteProduct(id);
+            return Result.success("删除成功");
+        } catch (Exception e) {
+            return Result.error("删除失败: " + e.getMessage());
+        }
+    }
 
     @AdminOperation(value = "查看操作日志", module = "系统日志")
     @GetMapping("/logs")

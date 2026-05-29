@@ -1052,32 +1052,6 @@ tr:hover td { background: #fafbfc; }
   opacity: 0.06;
 }
 
-/* Cloud pattern */
-.cloud-pattern {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.cloud {
-  position: absolute;
-  font-size: 80px;
-  color: rgba(180, 150, 120, 0.08);
-  animation: cloudFloat 20s ease-in-out infinite;
-}
-
-.cloud-1 { top: 5%; left: 10%; animation-delay: 0s; }
-.cloud-2 { top: 15%; right: 12%; animation-delay: -5s; font-size: 60px; }
-.cloud-3 { bottom: 8%; left: 15%; animation-delay: -10s; font-size: 100px; }
-.cloud-4 { bottom: 20%; right: 8%; animation-delay: -15s; font-size: 50px; }
-
-@keyframes cloudFloat {
-  0%, 100% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-15px) scale(1.05); }
-}
-
 /* Card wrapper */
 .chinese-card-wrapper {
   position: relative;
@@ -1093,11 +1067,11 @@ tr:hover td { background: #fafbfc; }
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--ink-border);
-  border-radius: 20px;
+  border-radius: 18px;
   box-shadow: 0 8px 40px rgba(100, 80, 60, 0.08), 0 2px 8px rgba(100, 80, 60, 0.04);
-  padding: 48px 40px 36px;
-  width: 400px;
-  max-width: 92vw;
+  padding: 42px 34px 30px;
+  width: 360px;
+  max-width: 90vw;
   position: relative;
   animation: chineseCardIn 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
@@ -1110,17 +1084,17 @@ tr:hover td { background: #fafbfc; }
 /* Vermillion seal */
 .chinese-seal {
   position: absolute;
-  top: -22px;
-  right: 30px;
-  width: 48px;
-  height: 48px;
+  top: -20px;
+  right: 26px;
+  width: 42px;
+  height: 42px;
   background: var(--ink-red);
   color: #fff;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 22px;
   font-family: 'STKaiti', 'KaiTi', serif;
   transform: rotate(8deg);
   box-shadow: 0 3px 10px rgba(196, 59, 59, 0.25);
@@ -1128,22 +1102,13 @@ tr:hover td { background: #fafbfc; }
 
 /* Typography */
 .chinese-title {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--ink-text);
   text-align: center;
-  margin-bottom: 6px;
+  margin-bottom: 32px;
   letter-spacing: 0.08em;
   font-family: 'Noto Serif SC', 'STKaiti', 'KaiTi', serif;
-}
-
-.chinese-subtitle {
-  font-size: 13px;
-  color: var(--ink-text-light);
-  text-align: center;
-  margin-bottom: 36px;
-  letter-spacing: 0.12em;
-  font-family: 'STKaiti', 'KaiTi', serif;
 }
 
 /* Alert */
@@ -1281,26 +1246,15 @@ tr:hover td { background: #fafbfc; }
   color: rgba(180, 150, 120, 0.4);
 }
 
-/* Copyright */
-.chinese-copyright {
-  margin-top: 24px;
-  font-size: 11px;
-  color: rgba(140, 120, 100, 0.5);
-  text-align: center;
-  letter-spacing: 0.05em;
-  font-family: 'STKaiti', 'KaiTi', serif;
-}
-
 /* Mobile */
 @media (max-width: 768px) {
   .chinese-card {
-    padding: 36px 24px 28px;
+    padding: 32px 22px 24px;
     border-radius: 16px;
+    width: 88vw;
   }
-  .chinese-title { font-size: 22px; }
-  .chinese-subtitle { font-size: 12px; margin-bottom: 28px; }
-  .chinese-seal { width: 40px; height: 40px; font-size: 20px; top: -18px; right: 20px; }
-  .chinese-copyright { color: rgba(100, 80, 60, 0.35); }
+  .chinese-title { font-size: 20px; margin-bottom: 26px; }
+  .chinese-seal { width: 36px; height: 36px; font-size: 18px; top: -16px; right: 18px; }
 }
 
 /* ===== Print ===== */

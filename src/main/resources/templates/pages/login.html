@@ -14,18 +14,10 @@
     <div class="ink-wash ink-wash-3"></div>
 </div>
 
-<div class="cloud-pattern">
-    <span class="cloud cloud-1">&#10059;</span>
-    <span class="cloud cloud-2">&#10059;</span>
-    <span class="cloud cloud-3">&#10059;</span>
-    <span class="cloud cloud-4">&#10059;</span>
-</div>
-
 <div class="chinese-card-wrapper">
     <div class="chinese-card">
         <div class="chinese-seal">&#21360;</div>
         <h2 class="chinese-title">欢迎回来</h2>
-        <p class="chinese-subtitle">翰墨书香 · 雅致生活</p>
 
         <div th:if="${session.message}" class="chinese-alert" th:classappend="${session.messageType == 'success' ? 'alert-success' : 'alert-error'}">
             <span th:text="${session.message}"></span>
@@ -55,7 +47,6 @@
             <a th:href="@{/}">返回首页</a>
         </div>
     </div>
-    <p class="chinese-copyright">&copy; 2026 线上购物与交易系统 &mdash; 国风雅韵</p>
 </div>
 
 <script>

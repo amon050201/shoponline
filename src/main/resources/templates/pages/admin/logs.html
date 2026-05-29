@@ -86,74 +86,163 @@
 </div>
 
 <script>
-function toggleSidebar(){var s=document.getElementById('adminSidebar'),o=document.getElementById('sidebarOverlay');if(s&&o){s.classList.toggle('open');o.classList.toggle('show')}}
-function closeSidebar(){var s=document.getElementById('adminSidebar'),o=document.getElementById('sidebarOverlay');if(s&&o){s.classList.remove('open');o.classList.remove('show')}}
-document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('.sidebar-nav a').forEach(function(l){l.addEventListener('click',function(){if(window.innerWidth<=768)closeSidebar()})})});
-
-var currentPage=1,pageSize=15;
-function showToast(msg,type){type=type||'info';var t=document.createElement('div');t.className='admin-toast '+type;t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.classList.add('hide');t.addEventListener('animationend',function(){t.remove()})},2500)}
-function openModal(id){document.getElementById(id).style.display='flex'}
-function closeModal(id){document.getElementById(id).style.display='none'}
-
-function loadLogs(){
-    var kw=document.getElementById('searchKeyword').value.trim();
-    var mod=document.getElementById('filterModule').value;
-    var ds=document.getElementById('filterDateStart').value;
-    var de=document.getElementById('filterDateEnd').value;
-    var params='?page='+currentPage+'&pageSize='+pageSize;
-    if(kw)params+='&keyword='+encodeURIComponent(kw);
-    if(mod)params+='&module='+encodeURIComponent(mod);
-    if(ds&&de)params+='&dateStart='+ds+'&dateEnd='+de;
-    fetch('/admin/api/logs'+params).then(function(r){return r.json()}).then(function(d){
-        if(!d.success){showToast(d.message||'加载失败','error');return}
-        renderTable(d.data.logs);renderPagination(d.data.total,d.data.page,d.data.pageSize)
-    }).catch(function(){showToast('网络错误','error')})
+function toggleSidebar() {
+    var s = document.getElementById('adminSidebar');
+    var o = document.getElementById('sidebarOverlay');
+    if (s && o) { s.classList.toggle('open'); o.classList.toggle('show'); }
 }
-
-function renderTable(logs){
-    var tbody=document.getElementById('logTableBody');
-    if(!logs||logs.length===0){tbody.innerHTML='<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">&#9645;</div><p>暂无操作日志</p></div></td></tr>';return}
-    var html='';
-    logs.forEach(function(l){
-        var isErr=l.result&&l.result.indexOf('异常')>=0;
-        var rs=l.result||'成功';if(rs.length>30)rs=rs.substring(0,30)+'...';
-        html+='<tr class="log-row" onclick="showDetail(event)" style="cursor:pointer;">';
-        html+='<td>'+l.id+'</td><td><strong>'+escapeHtml(l.username)+'</strong><span class="text-xs text-muted"> (ID:'+(l.userId||0)+')</span></td>';
-        html+='<td><span class="badge badge-blue">'+escapeHtml(l.module||'')+'</span></td><td>'+escapeHtml(l.operation||'')+'</td>';
-        html+='<td class="text-sm text-muted max-w-200 text-ellipsis" title="'+escapeHtml(l.method||'')+'">'+escapeHtml(l.method||'')+'</td>';
-        html+='<td class="text-sm text-muted">'+escapeHtml(l.ip||'-')+'</td>';
-        html+='<td><span class="badge '+(isErr?'badge-red':'badge-green')+'">'+escapeHtml(rs)+'</span></td>';
-        html+='<td class="text-sm text-muted">'+(l.duration||0)+'ms</td>';
-        html+='<td class="text-sm text-muted text-nowrap">'+(l.createdTime?l.createdTime.substring(0,19):'-')+'</td></tr>'
+function closeSidebar() {
+    var s = document.getElementById('adminSidebar');
+    var o = document.getElementById('sidebarOverlay');
+    if (s && o) { s.classList.remove('open'); o.classList.remove('show'); }
+}
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+        link.addEventListener('click', function() {
+            if (window.innerWidth <= 768) closeSidebar();
+        });
     });
-    tbody.innerHTML=html
+});
+
+var currentPage = 1;
+var pageSize = 15;
+
+function showToast(msg, type) {
+    type = type || 'info';
+    var t = document.createElement('div');
+    t.className = 'admin-toast ' + type;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(function() {
+        t.classList.add('hide');
+        t.addEventListener('animationend', function() { t.remove(); });
+    }, 2500);
 }
 
-function renderPagination(total,page,ps){
-    var tp=Math.ceil(total/ps),bar=document.getElementById('paginationBar');
-    if(tp<=1){bar.innerHTML='<span class="pagination-info">共 '+total+' 条</span>';return}
-    var h='<span class="pagination-info">共 '+total+' 条，第 '+page+'/'+tp+' 页</span><div class="pagination-btns">';
-    h+='<button type="button" class="btn btn-sm btn-secondary" onclick="goPage('+(page-1)+')" '+(page<=1?'disabled':'')+'>上一页</button>';
-    for(var i=1;i<=tp;i++){
-        if(tp<=7||i===1||i===tp||(i>=page-1&&i<=page+1))h+='<button type="button" class="btn btn-sm '+(i===page?'btn-primary':'btn-secondary')+'" onclick="goPage('+i+')">'+i+'</button>';
-        else if(i===page-2||i===page+2)h+='<span class="pagination-ellipsis">...</span>'
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+function loadLogs() {
+    try {
+        var kw = document.getElementById('searchKeyword').value.trim();
+        var mod = document.getElementById('filterModule').value;
+        var ds = document.getElementById('filterDateStart').value;
+        var de = document.getElementById('filterDateEnd').value;
+        var params = '?page=' + currentPage + '&pageSize=' + pageSize;
+        if (kw) params += '&keyword=' + encodeURIComponent(kw);
+        if (mod) params += '&module=' + encodeURIComponent(mod);
+        if (ds && de) { params += '&dateStart=' + ds + '&dateEnd=' + de; }
+
+        fetch('/admin/api/logs' + params)
+            .then(function(r) {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.json();
+            })
+            .then(function(d) {
+                if (!d.success) { showToast(d.message || '加载失败', 'error'); return; }
+                renderTable(d.data.logs);
+                renderPagination(d.data.total, d.data.page, d.data.pageSize);
+            })
+            .catch(function(e) {
+                showToast('加载失败: ' + e.message, 'error');
+            });
+    } catch (e) {
+        showToast('脚本错误: ' + e.message, 'error');
     }
-    h+='<button type="button" class="btn btn-sm btn-secondary" onclick="goPage('+(page+1)+')" '+(page>=tp?'disabled':'')+'>下一页</button></div>';
-    bar.innerHTML=h
 }
 
-function goPage(p){currentPage=p;loadLogs()}
-function searchLogs(){currentPage=1;loadLogs()}
-function showDetail(evt){
-    var cells=evt.currentTarget.querySelectorAll('td');if(cells.length<9)return;
-    var detail={id:cells[0].textContent,username:(cells[1].querySelector('strong')||{}).textContent||'',module:(cells[2].querySelector('.badge')||{}).textContent||cells[2].textContent,operation:cells[3].textContent,method:cells[4].getAttribute('title')||cells[4].textContent,ip:cells[5].textContent,result:(cells[6].querySelector('.badge')||{}).textContent||cells[6].textContent,duration:cells[7].textContent,time:cells[8].textContent};
-    var fields=[['ID',detail.id],['操作用户',detail.username],['模块',detail.module],['操作',detail.operation],['方法',detail.method],['IP地址',detail.ip],['结果',detail.result],['耗时',detail.duration],['时间',detail.time]];
-    var html='';fields.forEach(function(f){html+='<div class="log-detail-item"><span class="log-detail-label">'+f[0]+'</span><span class="log-detail-value">'+escapeHtml(f[1]||'-')+'</span></div>'});
-    document.getElementById('logDetailContent').innerHTML=html;openModal('detailModal')
+function renderTable(logs) {
+    var tbody = document.getElementById('logTableBody');
+    if (!logs || logs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">&#9645;</div><p>暂无操作日志</p></div></td></tr>';
+        return;
+    }
+    var html = '';
+    logs.forEach(function(l) {
+        var isErr = l.result && l.result.indexOf('异常') >= 0;
+        var rs = l.result || '成功';
+        if (rs.length > 30) rs = rs.substring(0, 30) + '...';
+        html += '<tr class="log-row" onclick="showDetail(event)" style="cursor:pointer;">';
+        html += '<td>' + l.id + '</td>';
+        html += '<td><strong>' + escapeHtml(l.username) + '</strong><span class="text-xs text-muted"> (ID:' + (l.userId || 0) + ')</span></td>';
+        html += '<td><span class="badge badge-blue">' + escapeHtml(l.module || '') + '</span></td>';
+        html += '<td>' + escapeHtml(l.operation || '') + '</td>';
+        html += '<td class="text-sm text-muted max-w-200 text-ellipsis" title="' + escapeHtml(l.method || '') + '">' + escapeHtml(l.method || '') + '</td>';
+        html += '<td class="text-sm text-muted">' + escapeHtml(l.ip || '-') + '</td>';
+        html += '<td><span class="badge ' + (isErr ? 'badge-red' : 'badge-green') + '">' + escapeHtml(rs) + '</span></td>';
+        html += '<td class="text-sm text-muted">' + (l.duration || 0) + 'ms</td>';
+        html += '<td class="text-sm text-muted text-nowrap">' + (l.createdTime ? l.createdTime.substring(0, 19) : '-') + '</td></tr>';
+    });
+    tbody.innerHTML = html;
 }
-function cleanOldLogs(){if(!confirm('确定要清理90天前的操作日志吗？'))return;fetch('/admin/api/logs/clean?days=90',{method:'DELETE'}).then(function(r){return r.json()}).then(function(d){showToast(d.message,d.success?'success':'error');if(d.success)loadLogs()})}
-function escapeHtml(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-document.addEventListener('click',function(e){if(e.target.classList.contains('modal-overlay'))e.target.style.display='none'});
+
+function renderPagination(total, page, ps) {
+    var tp = Math.ceil(total / ps);
+    var bar = document.getElementById('paginationBar');
+    if (tp <= 1) { bar.innerHTML = '<span class="pagination-info">共 ' + total + ' 条</span>'; return; }
+    var h = '<span class="pagination-info">共 ' + total + ' 条，第 ' + page + '/' + tp + ' 页</span><div class="pagination-btns">';
+    h += '<button type="button" class="btn btn-sm btn-secondary" onclick="goPage(' + (page - 1) + ')" ' + (page <= 1 ? 'disabled' : '') + '>上一页</button>';
+    for (var i = 1; i <= tp; i++) {
+        if (tp <= 7 || i === 1 || i === tp || (i >= page - 1 && i <= page + 1)) {
+            h += '<button type="button" class="btn btn-sm ' + (i === page ? 'btn-primary' : 'btn-secondary') + '" onclick="goPage(' + i + ')">' + i + '</button>';
+        } else if (i === page - 2 || i === page + 2) {
+            h += '<span class="pagination-ellipsis">...</span>';
+        }
+    }
+    h += '<button type="button" class="btn btn-sm btn-secondary" onclick="goPage(' + (page + 1) + ')" ' + (page >= tp ? 'disabled' : '') + '>下一页</button></div>';
+    bar.innerHTML = h;
+}
+
+function goPage(p) { currentPage = p; loadLogs(); }
+function searchLogs() { currentPage = 1; loadLogs(); }
+
+function showDetail(evt) {
+    var cells = evt.currentTarget.querySelectorAll('td');
+    if (cells.length < 9) return;
+    var detail = {
+        id: cells[0].textContent,
+        username: (cells[1].querySelector('strong') || {}).textContent || '',
+        module: (cells[2].querySelector('.badge') || {}).textContent || cells[2].textContent,
+        operation: cells[3].textContent,
+        method: cells[4].getAttribute('title') || cells[4].textContent,
+        ip: cells[5].textContent,
+        result: (cells[6].querySelector('.badge') || {}).textContent || cells[6].textContent,
+        duration: cells[7].textContent,
+        time: cells[8].textContent
+    };
+    var fields = [
+        ['ID', detail.id], ['操作用户', detail.username], ['模块', detail.module],
+        ['操作', detail.operation], ['方法', detail.method], ['IP地址', detail.ip],
+        ['结果', detail.result], ['耗时', detail.duration], ['时间', detail.time]
+    ];
+    var html = '';
+    fields.forEach(function(f) {
+        html += '<div class="log-detail-item"><span class="log-detail-label">' + f[0] + '</span><span class="log-detail-value">' + escapeHtml(f[1] || '-') + '</span></div>';
+    });
+    document.getElementById('logDetailContent').innerHTML = html;
+    openModal('detailModal');
+}
+
+function cleanOldLogs() {
+    if (!confirm('确定要清理90天前的操作日志吗？此操作不可恢复。')) return;
+    fetch('/admin/api/logs/clean?days=90', { method: 'DELETE' })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            showToast(d.message, d.success ? 'success' : 'error');
+            if (d.success) loadLogs();
+        });
+}
+
+function escapeHtml(s) {
+    if (!s) return '';
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none';
+});
+
+// Start loading
 loadLogs();
 </script>
 </body>

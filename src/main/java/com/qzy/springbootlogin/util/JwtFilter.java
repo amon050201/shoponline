@@ -13,7 +13,7 @@ import java.util.List;
 @Component
 public class JwtFilter implements Filter {
 
-    private static final List<String> API_PATHS = Arrays.asList("/api/", "/exchange/", "/order/", "/address/");
+    private static final List<String> API_PATHS = Arrays.asList("/api/", "/admin/api/", "/exchange/", "/order/", "/address/");
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

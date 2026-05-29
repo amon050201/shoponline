@@ -4,32 +4,36 @@
    ============================================ */
 
 :root {
-  --admin-primary: #4f46e5;
-  --admin-primary-light: #6366f1;
-  --admin-primary-dark: #4338ca;
-  --admin-sidebar-bg: #1e1b4b;
-  --admin-sidebar-hover: #312e81;
-  --admin-sidebar-active: #4338ca;
-  --admin-topbar-bg: #ffffff;
-  --admin-body-bg: #f1f5f9;
+  --admin-primary: #6366f1;
+  --admin-primary-light: #818cf8;
+  --admin-primary-dark: #4f46e5;
+  --admin-primary-glow: rgba(99,102,241,0.25);
+  --admin-sidebar-bg: #0f0d1a;
+  --admin-sidebar-hover: #1a1740;
+  --admin-sidebar-active: #252158;
+  --admin-topbar-bg: rgba(255,255,255,0.85);
+  --admin-body-bg: #f0f2f8;
   --admin-card-bg: #ffffff;
-  --admin-text: #1e293b;
-  --admin-text-secondary: #64748b;
-  --admin-text-muted: #94a3b8;
-  --admin-border: #e2e8f0;
+  --admin-text: #1a1a2e;
+  --admin-text-secondary: #5a5a7a;
+  --admin-text-muted: #9090a8;
+  --admin-border: #e8eaf0;
   --admin-success: #10b981;
   --admin-warning: #f59e0b;
   --admin-danger: #ef4444;
   --admin-info: #3b82f6;
-  --admin-shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-  --admin-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-  --admin-shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
-  --admin-shadow-lg: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
-  --admin-radius: 8px;
-  --admin-radius-lg: 12px;
-  --admin-sidebar-width: 250px;
+  --admin-shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --admin-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --admin-shadow-md: 0 6px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+  --admin-shadow-lg: 0 12px 28px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.06);
+  --admin-shadow-glow: 0 0 0 1px rgba(99,102,241,0.08), 0 8px 24px rgba(99,102,241,0.12);
+  --admin-radius: 10px;
+  --admin-radius-lg: 14px;
+  --admin-radius-xl: 18px;
+  --admin-sidebar-width: 260px;
   --admin-topbar-height: 60px;
-  --admin-transition: 0.2s ease;
+  --admin-transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+  --admin-gradient-card: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
 }
 
 /* ===== Reset & Base ===== */
@@ -41,6 +45,9 @@ body {
   line-height: 1.6;
   color: var(--admin-text);
   background: var(--admin-body-bg);
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(99,102,241,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(99,102,241,0.03) 0%, transparent 50%);
   min-height: 100vh;
 }
 
@@ -57,6 +64,7 @@ a:hover { color: var(--admin-primary-dark); }
 .admin-sidebar {
   width: var(--admin-sidebar-width);
   background: var(--admin-sidebar-bg);
+  background-image: linear-gradient(180deg, #0f0d1a 0%, #151230 50%, #0f0d1a 100%);
   color: #fff;
   position: fixed;
   top: 0;
@@ -67,30 +75,32 @@ a:hover { color: var(--admin-primary-dark); }
   flex-direction: column;
   transition: transform var(--admin-transition);
   overflow-y: auto;
+  border-right: 1px solid rgba(255,255,255,0.04);
 }
 
 .sidebar-brand {
-  padding: 20px 24px;
-  font-size: 18px;
+  padding: 22px 24px;
+  font-size: 17px;
   font-weight: 700;
   color: #fff;
   display: flex;
   align-items: center;
-  gap: 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  gap: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
   letter-spacing: 0.5px;
 }
 
 .sidebar-brand .brand-icon {
-  width: 36px;
-  height: 36px;
-  background: var(--admin-primary);
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, #6366f1, #818cf8);
   border-radius: var(--admin-radius);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(99,102,241,0.3);
 }
 
 .sidebar-user {
@@ -165,10 +175,11 @@ a:hover { color: var(--admin-primary-dark); }
 }
 
 .sidebar-nav a.active {
-  background: var(--admin-sidebar-active);
+  background: linear-gradient(90deg, rgba(99,102,241,0.25), rgba(99,102,241,0.08));
   color: #fff;
-  border-left-color: #a5b4fc;
+  border-left-color: #818cf8;
   font-weight: 600;
+  box-shadow: inset 0 0 20px rgba(99,102,241,0.08);
 }
 
 .sidebar-nav a .nav-icon {
@@ -223,16 +234,18 @@ a:hover { color: var(--admin-primary-dark); }
 /* ===== Topbar ===== */
 .admin-topbar {
   background: var(--admin-topbar-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   height: var(--admin-topbar-height);
-  border-bottom: 1px solid var(--admin-border);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  padding: 0 28px;
   position: sticky;
   top: 0;
   z-index: 50;
-  box-shadow: var(--admin-shadow-sm);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
 .topbar-left {
@@ -342,16 +355,30 @@ a:hover { color: var(--admin-primary-dark); }
 }
 
 .stat-card {
-  background: var(--admin-card-bg);
+  background: var(--admin-gradient-card);
   border-radius: var(--admin-radius-lg);
-  padding: 20px 24px;
+  padding: 22px 24px;
   box-shadow: var(--admin-shadow);
   display: flex;
   align-items: center;
   gap: 16px;
-  transition: all var(--admin-transition);
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
   border: 1px solid var(--admin-border);
+  position: relative;
+  overflow: hidden;
 }
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 3px;
+  background: linear-gradient(90deg, var(--admin-primary), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.stat-card:hover::after { opacity: 1; }
 
 .stat-card:hover {
   box-shadow: var(--admin-shadow-md);
@@ -402,11 +429,17 @@ a:hover { color: var(--admin-primary-dark); }
 
 /* ===== Cards / Sections ===== */
 .admin-card {
-  background: var(--admin-card-bg);
+  background: var(--admin-gradient-card);
   border-radius: var(--admin-radius-lg);
   box-shadow: var(--admin-shadow);
   border: 1px solid var(--admin-border);
   margin-bottom: 24px;
+  transition: all var(--admin-transition);
+}
+
+.admin-card:hover {
+  box-shadow: var(--admin-shadow-glow);
+  border-color: rgba(99,102,241,0.12);
 }
 
 .admin-card-header {
@@ -610,13 +643,14 @@ a:hover { color: var(--admin-primary-dark); }
 .btn:active { transform: scale(0.97); }
 
 .btn-primary {
-  background: var(--admin-primary);
+  background: linear-gradient(135deg, var(--admin-primary), var(--admin-primary-dark));
   color: #fff;
-  box-shadow: 0 1px 2px rgba(79,70,229,0.3);
+  box-shadow: 0 2px 8px rgba(99,102,241,0.3);
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
 }
 .btn-primary:hover {
-  background: var(--admin-primary-dark);
-  box-shadow: 0 2px 4px rgba(79,70,229,0.4);
+  box-shadow: 0 6px 20px rgba(99,102,241,0.4);
+  transform: translateY(-1px);
   color: #fff;
 }
 

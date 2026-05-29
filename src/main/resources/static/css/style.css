@@ -1135,8 +1135,8 @@ tr:hover td { background: #fafbfc; }
   border: 1px solid var(--ink-border);
   border-radius: 18px;
   box-shadow: 0 8px 40px rgba(100, 80, 60, 0.08), 0 2px 8px rgba(100, 80, 60, 0.04);
-  padding: 40px 36px 30px;
-  width: 300px;
+  padding: 40px 32px 30px;
+  width: 320px;
   max-width: 86vw;
   position: relative;
   animation: chineseCardIn 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -1205,12 +1205,11 @@ tr:hover td { background: #fafbfc; }
 .chinese-input-group {
   display: flex;
   align-items: center;
-  justify-content: center;
   background: rgba(250, 248, 245, 0.8);
   border: 1px solid rgba(180, 150, 120, 0.3);
-  border-radius: 12px;
-  padding: 0 14px;
-  margin-bottom: 16px;
+  border-radius: 10px;
+  padding: 0 12px;
+  margin-bottom: 14px;
   transition: all 0.3s ease;
 }
 
@@ -1223,7 +1222,7 @@ tr:hover td { background: #fafbfc; }
 .chinese-input-icon {
   font-size: 15px;
   color: #b8a090;
-  margin-right: 10px;
+  margin-right: 8px;
   flex-shrink: 0;
   transition: color 0.3s ease;
 }
@@ -1242,7 +1241,7 @@ tr:hover td { background: #fafbfc; }
   color: var(--ink-text);
   outline: none;
   min-width: 0;
-  text-align: center;
+  text-align: left;
 }
 
 .chinese-input-group input::placeholder {

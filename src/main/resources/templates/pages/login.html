@@ -6,45 +6,56 @@
     <title>登录 - 线上购物与交易系统</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body>
+<body class="chinese-login">
 
-<div class="login-page">
-    <div class="login-card">
-        <div class="login-header">
-            <div class="brand-dot">S</div>
-            <h2>欢迎回来</h2>
-            <p>登录您的账户继续购物</p>
-        </div>
+<div class="ink-bg">
+    <div class="ink-wash ink-wash-1"></div>
+    <div class="ink-wash ink-wash-2"></div>
+    <div class="ink-wash ink-wash-3"></div>
+</div>
 
-        <div th:if="${session.message}" class="alert" th:classappend="${session.messageType == 'success' ? 'alert-success' : 'alert-error'}">
+<div class="cloud-pattern">
+    <span class="cloud cloud-1">&#10059;</span>
+    <span class="cloud cloud-2">&#10059;</span>
+    <span class="cloud cloud-3">&#10059;</span>
+    <span class="cloud cloud-4">&#10059;</span>
+</div>
+
+<div class="chinese-card-wrapper">
+    <div class="chinese-card">
+        <div class="chinese-seal">&#21360;</div>
+        <h2 class="chinese-title">欢迎回来</h2>
+        <p class="chinese-subtitle">翰墨书香 · 雅致生活</p>
+
+        <div th:if="${session.message}" class="chinese-alert" th:classappend="${session.messageType == 'success' ? 'alert-success' : 'alert-error'}">
             <span th:text="${session.message}"></span>
         </div>
 
         <form th:action="@{/login}" method="post">
-            <div class="input-group">
-                <span class="input-icon">&#9671;</span>
-                <input type="text" id="username" name="username" placeholder="用户名" required autofocus>
+            <div class="chinese-input-group">
+                <span class="chinese-input-icon">&#9671;</span>
+                <input type="text" id="username" name="username" placeholder="请输入用户名" required autofocus>
             </div>
-            <div class="input-group">
-                <span class="input-icon">&#9679;</span>
-                <input type="password" id="password" name="password" placeholder="密码" required>
+            <div class="chinese-input-group">
+                <span class="chinese-input-icon">&#9679;</span>
+                <input type="password" id="password" name="password" placeholder="请输入密码" required>
             </div>
-            <div class="input-group">
-                <span class="input-icon">&#9638;</span>
+            <div class="chinese-input-group">
+                <span class="chinese-input-icon">&#9641;</span>
                 <input type="text" id="captcha" name="captcha" class="captcha-input" placeholder="验证码" required maxlength="4">
-                <img src="/captcha" alt="验证码" class="captcha-img" id="captchaImage" title="点击刷新验证码">
+                <img src="/captcha" alt="验证码" class="chinese-captcha" id="captchaImage" title="点击刷新">
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:4px;">登 录</button>
+            <button type="submit" class="chinese-btn">登&emsp;录</button>
         </form>
 
-        <div class="login-footer">
-            <a th:href="@{/register}">没有账号？立即注册</a>
+        <div class="chinese-footer">
+            <a th:href="@{/register}">尚无账号，立即注册</a>
+            <span class="chinese-divider">|</span>
             <a th:href="@{/}">返回首页</a>
         </div>
     </div>
-
-    <div class="login-copyright">&copy; 2026 线上购物与交易系统</div>
+    <p class="chinese-copyright">&copy; 2026 线上购物与交易系统 &mdash; 国风雅韵</p>
 </div>
 
 <script>

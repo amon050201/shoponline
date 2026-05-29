@@ -996,6 +996,313 @@ tr:hover td { background: #fafbfc; }
   }
 }
 
+/* ============================================
+   Chinese Aesthetic Login (新中式国风)
+   Ink Wash | Vermillion Red | Cloud Pattern
+   ============================================ */
+
+.chinese-login {
+  --ink-red: #c43b3b;
+  --ink-red-dark: #a83232;
+  --ink-red-light: #d4645a;
+  --ink-gold: #b8945a;
+  --ink-warm-white: #faf8f5;
+  --ink-card-bg: rgba(252, 250, 247, 0.94);
+  --ink-text: #3d322b;
+  --ink-text-light: #8c7b6e;
+  --ink-border: rgba(180, 150, 120, 0.25);
+
+  background: #f5f0e8;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Noto Serif SC', 'STSong', 'SimSun', 'KaiTi', 'Microsoft YaHei', serif;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Ink wash background */
+.ink-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+.ink-wash {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.12;
+  filter: blur(80px);
+}
+
+.ink-wash-1 {
+  width: 700px; height: 700px;
+  background: radial-gradient(circle at 40% 50%, #3a3028 0%, #6b5c4f 30%, #a89a8c 60%, transparent 100%);
+  top: -15%; left: -10%;
+}
+
+.ink-wash-2 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle at 60% 40%, #8b6b5a 0%, #c4a892 40%, #ddd4c8 70%, transparent 100%);
+  bottom: -10%; right: -8%;
+  opacity: 0.10;
+}
+
+.ink-wash-3 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle at 50% 50%, #b8947a 0%, #d4c4b0 50%, transparent 100%);
+  top: 40%; left: 50%;
+  opacity: 0.06;
+}
+
+/* Cloud pattern */
+.cloud-pattern {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.cloud {
+  position: absolute;
+  font-size: 80px;
+  color: rgba(180, 150, 120, 0.08);
+  animation: cloudFloat 20s ease-in-out infinite;
+}
+
+.cloud-1 { top: 5%; left: 10%; animation-delay: 0s; }
+.cloud-2 { top: 15%; right: 12%; animation-delay: -5s; font-size: 60px; }
+.cloud-3 { bottom: 8%; left: 15%; animation-delay: -10s; font-size: 100px; }
+.cloud-4 { bottom: 20%; right: 8%; animation-delay: -15s; font-size: 50px; }
+
+@keyframes cloudFloat {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-15px) scale(1.05); }
+}
+
+/* Card wrapper */
+.chinese-card-wrapper {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Card */
+.chinese-card {
+  background: var(--ink-card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--ink-border);
+  border-radius: 20px;
+  box-shadow: 0 8px 40px rgba(100, 80, 60, 0.08), 0 2px 8px rgba(100, 80, 60, 0.04);
+  padding: 48px 40px 36px;
+  width: 400px;
+  max-width: 92vw;
+  position: relative;
+  animation: chineseCardIn 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@keyframes chineseCardIn {
+  from { opacity: 0; transform: translateY(30px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Vermillion seal */
+.chinese-seal {
+  position: absolute;
+  top: -22px;
+  right: 30px;
+  width: 48px;
+  height: 48px;
+  background: var(--ink-red);
+  color: #fff;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-family: 'STKaiti', 'KaiTi', serif;
+  transform: rotate(8deg);
+  box-shadow: 0 3px 10px rgba(196, 59, 59, 0.25);
+}
+
+/* Typography */
+.chinese-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ink-text);
+  text-align: center;
+  margin-bottom: 6px;
+  letter-spacing: 0.08em;
+  font-family: 'Noto Serif SC', 'STKaiti', 'KaiTi', serif;
+}
+
+.chinese-subtitle {
+  font-size: 13px;
+  color: var(--ink-text-light);
+  text-align: center;
+  margin-bottom: 36px;
+  letter-spacing: 0.12em;
+  font-family: 'STKaiti', 'KaiTi', serif;
+}
+
+/* Alert */
+.chinese-alert {
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  margin-bottom: 20px;
+  text-align: center;
+  letter-spacing: 0.04em;
+  font-family: var(--font);
+}
+
+.chinese-alert.alert-success {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.chinese-alert.alert-error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* Input groups */
+.chinese-input-group {
+  display: flex;
+  align-items: center;
+  background: rgba(250, 248, 245, 0.8);
+  border: 1px solid rgba(180, 150, 120, 0.3);
+  border-radius: 12px;
+  padding: 0 14px;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+}
+
+.chinese-input-group:focus-within {
+  border-color: var(--ink-red);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(196, 59, 59, 0.06);
+}
+
+.chinese-input-icon {
+  font-size: 15px;
+  color: #b8a090;
+  margin-right: 10px;
+  flex-shrink: 0;
+  transition: color 0.3s ease;
+}
+
+.chinese-input-group:focus-within .chinese-input-icon {
+  color: var(--ink-red);
+}
+
+.chinese-input-group input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 12px 0;
+  font-size: 14px;
+  font-family: var(--font);
+  color: var(--ink-text);
+  outline: none;
+}
+
+.chinese-input-group input::placeholder {
+  color: #c8b8a8;
+}
+
+.captcha-input { max-width: 100px; }
+
+.chinese-captcha {
+  height: 38px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid rgba(180, 150, 120, 0.3);
+  flex-shrink: 0;
+}
+
+.chinese-captcha:hover { border-color: var(--ink-red); }
+
+/* Vermillion button */
+.chinese-btn {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, var(--ink-red) 0%, var(--ink-red-dark) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+  letter-spacing: 0.25em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(196, 59, 59, 0.2);
+  margin-top: 8px;
+}
+
+.chinese-btn:hover {
+  background: linear-gradient(135deg, var(--ink-red-dark) 0%, #8b2020 100%);
+  box-shadow: 0 6px 24px rgba(196, 59, 59, 0.3);
+  transform: translateY(-1px);
+}
+
+.chinese-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(196, 59, 59, 0.2);
+}
+
+/* Footer */
+.chinese-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(180, 150, 120, 0.15);
+}
+
+.chinese-footer a {
+  font-size: 12px;
+  color: var(--ink-text-light);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: color 0.2s ease;
+}
+
+.chinese-footer a:hover { color: var(--ink-red); }
+
+.chinese-divider {
+  font-size: 10px;
+  color: rgba(180, 150, 120, 0.4);
+}
+
+/* Copyright */
+.chinese-copyright {
+  margin-top: 24px;
+  font-size: 11px;
+  color: rgba(140, 120, 100, 0.5);
+  text-align: center;
+  letter-spacing: 0.05em;
+  font-family: 'STKaiti', 'KaiTi', serif;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .chinese-card {
+    padding: 36px 24px 28px;
+    border-radius: 16px;
+  }
+  .chinese-title { font-size: 22px; }
+  .chinese-subtitle { font-size: 12px; margin-bottom: 28px; }
+  .chinese-seal { width: 40px; height: 40px; font-size: 20px; top: -18px; right: 20px; }
+  .chinese-copyright { color: rgba(100, 80, 60, 0.35); }
+}
+
 /* ===== Print ===== */
 @media print {
   .navbar, .mobile-bottom-nav, .footer, .btn { display: none !important; }

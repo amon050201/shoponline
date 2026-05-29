@@ -113,10 +113,79 @@ public interface UserMapper {
     
     /**
      * 更新用户角色
-     * @param userId 用户ID
-     * @param roleType 角色类型
-     * @return 是否更新成功
      */
     @Update("UPDATE users SET role_type = #{roleType} WHERE id = #{userId}")
     boolean updateUserRole(@Param("userId") Long userId, @Param("roleType") Integer roleType);
+
+    /**
+     * 更新用户状态
+     */
+    @Update("UPDATE users SET status = #{status} WHERE id = #{userId}")
+    boolean updateUserStatus(@Param("userId") Long userId, @Param("status") Integer status);
+
+    /**
+     * 分页查询用户
+     */
+    @Select("SELECT id, username, password_hash as passwordHash, email, phone, role_type as roleType, status, created_at as createdAt, updated_at as updatedAt FROM users ORDER BY id DESC LIMIT #{offset}, #{limit}")
+    @Results({
+        @Result(property = "id", column = "id"),
+        @Result(property = "username", column = "username"),
+        @Result(property = "passwordHash", column = "passwordHash"),
+        @Result(property = "email", column = "email"),
+        @Result(property = "phone", column = "phone"),
+        @Result(property = "roleType", column = "roleType"),
+        @Result(property = "status", column = "status"),
+        @Result(property = "createdAt", column = "createdAt"),
+        @Result(property = "updatedAt", column = "updatedAt")
+    })
+    List<User> findByPage(@Param("offset") int offset, @Param("limit") int limit);
+
+    /**
+     * 搜索用户（按用户名/邮箱/手机号）
+     */
+    @Select("SELECT id, username, password_hash as passwordHash, email, phone, role_type as roleType, status, created_at as createdAt, updated_at as updatedAt FROM users WHERE username LIKE CONCAT('%',#{keyword},'%') OR email LIKE CONCAT('%',#{keyword},'%') OR phone LIKE CONCAT('%',#{keyword},'%') ORDER BY id DESC LIMIT #{offset}, #{limit}")
+    @Results({
+        @Result(property = "id", column = "id"),
+        @Result(property = "username", column = "username"),
+        @Result(property = "passwordHash", column = "passwordHash"),
+        @Result(property = "email", column = "email"),
+        @Result(property = "phone", column = "phone"),
+        @Result(property = "roleType", column = "roleType"),
+        @Result(property = "status", column = "status"),
+        @Result(property = "createdAt", column = "createdAt"),
+        @Result(property = "updatedAt", column = "updatedAt")
+    })
+    List<User> search(@Param("keyword") String keyword, @Param("offset") int offset, @Param("limit") int limit);
+
+    /**
+     * 搜索用户总数
+     */
+    @Select("SELECT COUNT(*) FROM users WHERE username LIKE CONCAT('%',#{keyword},'%') OR email LIKE CONCAT('%',#{keyword},'%') OR phone LIKE CONCAT('%',#{keyword},'%')")
+    int countSearch(@Param("keyword") String keyword);
+
+    /**
+     * 按角色筛选用户
+     */
+    @Select("SELECT id, username, password_hash as passwordHash, email, phone, role_type as roleType, status, created_at as createdAt, updated_at as updatedAt FROM users WHERE role_type = #{roleType} ORDER BY id DESC LIMIT #{offset}, #{limit}")
+    @Results({
+        @Result(property = "id", column = "id"),
+        @Result(property = "username", column = "username"),
+        @Result(property = "passwordHash", column = "passwordHash"),
+        @Result(property = "email", column = "email"),
+        @Result(property = "phone", column = "phone"),
+        @Result(property = "roleType", column = "roleType"),
+        @Result(property = "status", column = "status"),
+        @Result(property = "createdAt", column = "createdAt"),
+        @Result(property = "updatedAt", column = "updatedAt")
+    })
+    List<User> findByRole(@Param("roleType") int roleType, @Param("offset") int offset, @Param("limit") int limit);
+
+    /**
+     * 按角色筛选用户总数
+     */
+    @Select("SELECT COUNT(*) FROM users WHERE role_type = #{roleType}")
+    int countByRole(@Param("roleType") int roleType);
+
+    @Select("SELECT COUNT(*) FROM users")
+    int count();
 }

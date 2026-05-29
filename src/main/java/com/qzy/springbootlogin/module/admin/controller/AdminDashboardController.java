@@ -2,6 +2,7 @@ package com.qzy.springbootlogin.module.admin.controller;
 
 import com.qzy.springbootlogin.ai.pojo.FraudAlert;
 import com.qzy.springbootlogin.ai.service.FraudDetectionService;
+import com.qzy.springbootlogin.util.AdminOperation;
 import com.qzy.springbootlogin.pojo.Result;
 import com.qzy.springbootlogin.pojo.User;
 import com.qzy.springbootlogin.service.UserService;
@@ -27,6 +28,7 @@ public class AdminDashboardController {
     @Autowired(required = false)
     private FraudDetectionService fraudDetectionService;
 
+    @AdminOperation(value = "查看管理仪表板数据", module = "仪表盘")
     @GetMapping("/dashboard")
     public Result dashboard(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");

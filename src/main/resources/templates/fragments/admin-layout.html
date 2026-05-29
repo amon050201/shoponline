@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} + ' - 管理后台'">管理后台</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <th:block th:replace="${extraHead} ?: ~{}" />
+</head>
+<body>
+
+<div class="admin-layout" th:fragment="layout">
+
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <a href="/admin/dashboard" class="sidebar-brand">
+            <span class="brand-icon">&#9709;</span>
+            管理后台
+        </a>
+
+        <div class="sidebar-user">
+            <div class="avatar" th:text="${username != null ? #strings.substring(username, 0, 1) : 'A'}">A</div>
+            <div class="user-info">
+                <div class="user-name" th:text="${username}">管理员</div>
+                <div class="user-role">系统管理员</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">主导航</div>
+            <a th:href="@{/admin/dashboard}"
+               th:classappend="${activePage == 'dashboard'} ? 'active'">
+                <span class="nav-icon">&#9632;</span> 控制台
+            </a>
+            <a th:href="@{/admin/users}"
+               th:classappend="${activePage == 'users'} ? 'active'">
+                <span class="nav-icon">&#9633;</span> 用户管理
+            </a>
+            <a th:href="@{/admin/logs}"
+               th:classappend="${activePage == 'logs'} ? 'active'">
+                <span class="nav-icon">&#9645;</span> 操作日志
+            </a>
+
+            <div class="sidebar-section" style="margin-top:12px;">快捷入口</div>
+            <a th:href="@{/product/list}">
+                <span class="nav-icon">&#9651;</span> 商品管理
+            </a>
+            <a th:href="@{/order/list}">
+                <span class="nav-icon">&#9644;</span> 订单管理
+            </a>
+            <a th:href="@{/test}">
+                <span class="nav-icon">&#9673;</span> 系统测试
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a th:href="@{/}">&#8592; 返回前台</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Topbar -->
+        <header class="admin-topbar">
+            <div class="topbar-left">
+                <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="菜单">&#9776;</button>
+                <div class="breadcrumb" th:if="${breadcrumbs != null}">
+                    <th:block th:each="crumb, iterStat : ${breadcrumbs}">
+                        <span th:if="${iterStat.last}" class="current" th:text="${crumb.label}">当前页</span>
+                        <th:block th:unless="${iterStat.last}">
+                            <a th:href="${crumb.url}" th:text="${crumb.label}">上级</a>
+                            <span class="separator">/</span>
+                        </th:block>
+                    </th:block>
+                </div>
+                <div class="breadcrumb" th:unless="${breadcrumbs != null}">
+                    <span class="current" th:text="${pageTitle}">页面</span>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <span style="font-size:13px;color:var(--admin-text-muted);" th:text="'欢迎，' + ${username}">欢迎，管理员</span>
+                <a th:href="@{/logout}" class="topbar-btn danger">
+                    <span>&#10149;</span> <span>退出登录</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="admin-content">
+            <th:block th:replace="${content} ?: ~{}" />
+        </main>
+    </div>
+</div>
+
+<script th:fragment="sidebar-script">
+    function toggleSidebar() {
+        var sidebar = document.getElementById('adminSidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        if (sidebar && overlay) {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+    }
+    function closeSidebar() {
+        var sidebar = document.getElementById('adminSidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        if (sidebar && overlay) {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+        }
+    }
+    // Close sidebar when a nav link is clicked (mobile)
+    document.addEventListener('DOMContentLoaded', function() {
+        var links = document.querySelectorAll('.sidebar-nav a');
+        links.forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    closeSidebar();
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -2,6 +2,7 @@ package com.qzy.springbootlogin.ai.controller;
 
 import com.qzy.springbootlogin.ai.pojo.FraudAlert;
 import com.qzy.springbootlogin.ai.service.FraudDetectionService;
+import com.qzy.springbootlogin.util.AdminOperation;
 import com.qzy.springbootlogin.pojo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ public class AiFraudDetectionController {
     private FraudDetectionService fraudDetectionService;
 
     @GetMapping("/alerts")
+    @AdminOperation(value = "查看欺诈告警", module = "安全管理")
     public Result getAlerts(@RequestParam(defaultValue = "false") boolean unresolvedOnly) {
         try {
             List<FraudAlert> alerts;
@@ -31,6 +33,7 @@ public class AiFraudDetectionController {
     }
 
     @PostMapping("/resolve/{id}")
+    @AdminOperation(value = "处理欺诈告警", module = "安全管理")
     public Result resolveAlert(@PathVariable Long id) {
         try {
             fraudDetectionService.resolveAlert(id);

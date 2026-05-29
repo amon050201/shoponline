@@ -1,138 +1,121 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>管理员后台 - 线上购物与交易系统</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      th:replace="fragments/admin-layout :: layout"
+      th:with="pageTitle='控制台', activePage='dashboard', content=~{::page-content}">
 <body>
-<div class="navbar desktop-nav">
-    <div class="nav-container">
-        <a href="/" class="nav-brand">线上购物与交易系统</a>
-        <button class="hamburger-btn" onclick="toggleMobileMenu()">☰</button>
-        <ul class="nav-menu">
-            <li class="nav-item active"><a href="/admin/dashboard">控制台</a></li>
-            <li class="nav-item"><a href="/admin/users">用户管理</a></li>
-            <li class="nav-item"><a href="/product/list">商品管理</a></li>
-            <li class="nav-item"><a href="/order/list">订单管理</a></li>
-            <li class="nav-item"><a href="/test">系统测试</a></li>
-            <li class="nav-item"><a href="/logout">退出</a></li>
-        </ul>
+<div th:fragment="page-content">
+
+    <div class="page-header">
+        <h1>管理员控制台</h1>
+        <p>欢迎回来，<strong th:text="${username}">管理员</strong>！以下是系统运行概况。</p>
     </div>
-</div>
 
-<!-- 移动端下拉菜单 -->
-<div class="mobile-dropdown" id="mobileDropdown">
-    <a href="/">首页</a>
-    <a href="/admin/dashboard">控制台</a>
-    <a href="/admin/users">用户管理</a>
-    <a href="/product/list">商品管理</a>
-    <a href="/order/list">订单管理</a>
-    <a href="/logout">退出</a>
-</div>
-
-<div class="container">
-    <h2>管理员控制台</h2>
-    <p style="color: #666; margin-bottom: 20px;">欢迎回来，<strong th:text="${username}">管理员</strong>！以下是系统运行概况。</p>
-
-    <!-- 统计卡片 -->
+    <!-- Stats Cards -->
     <div class="stats-grid">
-        <div class="stat-card users">
-            <div class="stat-icon">👥</div>
-            <div class="stat-number" th:text="${totalUsers}">0</div>
-            <div class="stat-label">总用户数</div>
+        <div class="stat-card">
+            <div class="stat-icon-wrap blue">&#9632;</div>
+            <div class="stat-info">
+                <div class="stat-value" th:text="${totalUsers}">0</div>
+                <div class="stat-label">总用户数</div>
+                <div class="stat-sub" th:text="'活跃 ' + ${activeUsers} + ' 人'">活跃 0 人</div>
+            </div>
         </div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #fff3e0, #ffe0b2);">
-            <div class="stat-icon">🏪</div>
-            <div class="stat-number" th:text="${merchantCount}">0</div>
-            <div class="stat-label">商家数</div>
+        <div class="stat-card">
+            <div class="stat-icon-wrap green">&#9645;</div>
+            <div class="stat-info">
+                <div class="stat-value" th:text="${merchantCount}">0</div>
+                <div class="stat-label">商家数</div>
+            </div>
         </div>
-        <div class="stat-card products">
-            <div class="stat-icon">📦</div>
-            <div class="stat-number" th:text="${productCount}">0</div>
-            <div class="stat-label">在售商品</div>
+        <div class="stat-card">
+            <div class="stat-icon-wrap purple">&#9651;</div>
+            <div class="stat-info">
+                <div class="stat-value" th:text="${productCount}">0</div>
+                <div class="stat-label">在售商品</div>
+            </div>
         </div>
-        <div class="stat-card orders">
-            <div class="stat-icon">📋</div>
-            <div class="stat-number" th:text="${orderCount}">0</div>
-            <div class="stat-label">总订单数</div>
+        <div class="stat-card">
+            <div class="stat-icon-wrap orange">&#9644;</div>
+            <div class="stat-info">
+                <div class="stat-value" th:text="${orderCount}">0</div>
+                <div class="stat-label">总订单数</div>
+            </div>
         </div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #fce4ec, #f8bbd9);">
-            <div class="stat-icon">⏳</div>
-            <div class="stat-number" th:text="${pendingOrderCount}">0</div>
-            <div class="stat-label">待支付</div>
+        <div class="stat-card">
+            <div class="stat-icon-wrap red">&#9679;</div>
+            <div class="stat-info">
+                <div class="stat-value" th:text="${pendingOrderCount}">0</div>
+                <div class="stat-label">待支付</div>
+            </div>
         </div>
-        <div class="stat-card revenue">
-            <div class="stat-icon">💰</div>
-            <div class="stat-number">¥<span th:text="${#numbers.formatDecimal(totalRevenue, 1, 2)}">0.00</span></div>
-            <div class="stat-label">总营收</div>
-        </div>
-    </div>
-
-    <!-- 快捷操作 -->
-    <div class="section">
-        <h3>快捷操作</h3>
-        <div class="quick-links">
-            <a href="/admin/users" class="quick-link">
-                <span class="icon">👥</span>
-                <div>
-                    <div class="title">用户管理</div>
-                    <div class="desc">查看、编辑和管理所有用户</div>
-                </div>
-            </a>
-            <a href="/product/list" class="quick-link green">
-                <span class="icon">📦</span>
-                <div>
-                    <div class="title">商品管理</div>
-                    <div class="desc">浏览、添加和编辑商品信息</div>
-                </div>
-            </a>
-            <a href="/order/list" class="quick-link orange">
-                <span class="icon">📋</span>
-                <div>
-                    <div class="title">订单管理</div>
-                    <div class="desc">查看所有订单和交易记录</div>
-                </div>
-            </a>
-            <a href="/test" class="quick-link" style="background: linear-gradient(135deg, #3498db, #2980b9);">
-                <span class="icon">🔍</span>
-                <div>
-                    <div class="title">系统测试</div>
-                    <div class="desc">运行系统功能自检</div>
-                </div>
-            </a>
-        </div>
-    </div>
-
-    <!-- 欺诈告警 -->
-    <div class="section" id="fraud-alert-section" style="display:none;">
-        <h3>🚨 欺诈风险告警</h3>
-        <div class="analytics-panel">
-            <div id="fraud-alerts-content">
-                <div class="loading-text">加载告警数据...</div>
+        <div class="stat-card">
+            <div class="stat-icon-wrap indigo">&#9733;</div>
+            <div class="stat-info">
+                <div class="stat-value">&#165;<span th:text="${#numbers.formatDecimal(totalRevenue, 1, 2)}">0.00</span></div>
+                <div class="stat-label">总营收</div>
             </div>
         </div>
     </div>
 
-    <!-- AI分析面板 -->
-    <div class="section">
-        <h3>AI 智能分析</h3>
-        <div class="analytics-panel">
-            <h4 style="color:#333;margin-bottom:10px;">用户行为概览</h4>
-            <div class="behavior-grid" id="behavior-stats">
-                <div class="loading-text">加载行为数据...</div>
+    <!-- Quick Actions -->
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <h3>快捷操作</h3>
+        </div>
+        <div class="admin-card-body">
+            <div class="quick-links">
+                <a href="/admin/users" class="quick-link">
+                    <span class="ql-icon blue">&#9633;</span>
+                    <div>
+                        <div class="ql-title">用户管理</div>
+                        <div class="ql-desc">查看、编辑和管理所有用户</div>
+                    </div>
+                </a>
+                <a href="/admin/logs" class="quick-link">
+                    <span class="ql-icon indigo">&#9645;</span>
+                    <div>
+                        <div class="ql-title">操作日志</div>
+                        <div class="ql-desc">查看管理员操作审计记录</div>
+                    </div>
+                </a>
+                <a href="/product/list" class="quick-link">
+                    <span class="ql-icon green">&#9651;</span>
+                    <div>
+                        <div class="ql-title">商品管理</div>
+                        <div class="ql-desc">浏览、添加和编辑商品信息</div>
+                    </div>
+                </a>
+                <a href="/order/list" class="quick-link">
+                    <span class="ql-icon orange">&#9644;</span>
+                    <div>
+                        <div class="ql-title">订单管理</div>
+                        <div class="ql-desc">查看所有订单和交易记录</div>
+                    </div>
+                </a>
             </div>
+        </div>
+    </div>
 
-            <div class="sales-trend">
-                <h4 style="color:#333;margin-bottom:15px;">近30天销售趋势</h4>
+    <!-- AI Analytics -->
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <h3>AI 智能分析</h3>
+        </div>
+        <div class="admin-card-body">
+            <div class="analytics-panel">
+                <h4>用户行为概览</h4>
+                <div class="behavior-grid" id="behavior-stats">
+                    <div class="loading-text">加载行为数据...</div>
+                </div>
+            </div>
+            <div class="analytics-panel" style="margin-top:16px;">
+                <h4>近14天销售趋势</h4>
                 <div id="sales-trend-chart">
                     <div class="loading-text">加载趋势数据...</div>
                 </div>
             </div>
-
-            <div class="sales-trend">
-                <h4 style="color:#333;margin-bottom:15px;">分类销售分布</h4>
+            <div class="analytics-panel" style="margin-top:16px;">
+                <h4>分类销售分布</h4>
                 <div id="category-distribution">
                     <div class="loading-text">加载分类数据...</div>
                 </div>
@@ -140,170 +123,148 @@
         </div>
     </div>
 
-    <!-- 用户列表 -->
-    <div class="section">
-        <h3>用户列表</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>用户名</th>
-                    <th>邮箱</th>
-                    <th>角色</th>
-                    <th>状态</th>
-                    <th>注册时间</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="user : ${users}">
-                    <td th:text="${user.id}">1</td>
-                    <td th:text="${user.username}">用户名</td>
-                    <td th:text="${user.email != null ? user.email : '-'}">-</td>
-                    <td>
-                        <span th:if="${user.roleType == 0}" class="role-badge role-customer">顾客</span>
-                        <span th:if="${user.roleType == 1}" class="role-badge role-merchant">商家</span>
-                        <span th:if="${user.roleType == 2}" class="role-badge role-admin">管理员</span>
-                    </td>
-                    <td>
-                        <span th:if="${user.status == 1}" class="status-active">启用</span>
-                        <span th:if="${user.status == 0}" class="status-disabled">禁用</span>
-                    </td>
-                    <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">-</td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- Fraud Alerts -->
+    <div class="admin-card" id="fraud-alert-section" style="display:none;">
+        <div class="admin-card-header">
+            <h3>欺诈风险告警</h3>
+        </div>
+        <div class="admin-card-body" id="fraud-alerts-content">
+            <div class="loading-text">加载告警数据...</div>
+        </div>
     </div>
-</div>
-<script>
-    // 加载用户行为统计
-    fetch('/api/analytics/behavior-stats')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (data.success && data.data) {
-                var s = data.data;
-                document.getElementById('behavior-stats').innerHTML =
-                    '<div class="behavior-card"><div class="behavior-value">' + (s.totalViews || 0) + '</div><div class="behavior-label">浏览次数</div></div>' +
-                    '<div class="behavior-card"><div class="behavior-value">' + (s.totalSearches || 0) + '</div><div class="behavior-label">搜索次数</div></div>' +
-                    '<div class="behavior-card"><div class="behavior-value">' + (s.totalAddCart || 0) + '</div><div class="behavior-label">加入购物车</div></div>' +
-                    '<div class="behavior-card"><div class="behavior-value">' + (s.totalPurchases || 0) + '</div><div class="behavior-label">购买次数</div></div>' +
-                    '<div class="behavior-card"><div class="behavior-value">' + (s.activeUsers || 0) + '</div><div class="behavior-label">活跃用户</div></div>';
-            }
-        })
-        .catch(function() {});
 
-    // 加载销售趋势
-    fetch('/api/analytics/sales-trend?days=30')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (data.success && data.data && data.data.length > 0) {
-                var items = data.data;
-                var maxRevenue = 0;
-                items.forEach(function(d) { if (d.revenue > maxRevenue) maxRevenue = d.revenue; });
-                var bars = items.slice(-14).map(function(d) {
-                    var h = maxRevenue > 0 ? Math.max(4, (d.revenue / maxRevenue) * 100) : 4;
-                    var date = d.date ? d.date.substring(5) : '';
-                    return '<div style="flex:1;text-align:center;"><div class="trend-bar" style="height:' + h + 'px;" title="' + date + ' ¥' + (d.revenue || 0).toFixed(2) + '"></div><div class="trend-label">' + date + '</div></div>';
-                });
-                document.getElementById('sales-trend-chart').innerHTML = '<div class="trend-bar-container">' + bars.join('') + '</div><p style="text-align:center;color:#999;font-size:12px;">近14天销售趋势</p>';
-            } else {
-                document.getElementById('sales-trend-chart').innerHTML = '<p style="text-align:center;color:#999;padding:20px;">暂无销售数据</p>';
-            }
-        })
-        .catch(function() {});
-
-    // 加载分类分布
-    fetch('/api/analytics/category-distribution')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (data.success && data.data && data.data.length > 0) {
-                var html = '<table><thead><tr><th>分类</th><th>订单数</th><th>营收</th></tr></thead><tbody>';
-                data.data.forEach(function(c) {
-                    html += '<tr><td>' + (c.name || '') + '</td><td>' + (c.order_count || 0) + '</td><td>¥' + (c.revenue || 0).toFixed(2) + '</td></tr>';
-                });
-                html += '</tbody></table>';
-                document.getElementById('category-distribution').innerHTML = html;
-            }
-        })
-        .catch(function() {});
-
-    // 加载欺诈告警
-    fetch('/api/admin/fraud/alerts?unresolvedOnly=true')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (data.success && data.data && data.data.length > 0) {
-                var section = document.getElementById('fraud-alert-section');
-                section.style.display = 'block';
-                var html = '<table><thead><tr><th>类型</th><th>用户</th><th>描述</th><th>风险评分</th><th>严重程度</th><th>操作</th></tr></thead><tbody>';
-                data.data.forEach(function(a) {
-                    var severityLabel = '低';
-                    if (a.severity === 2) severityLabel = '中';
-                    else if (a.severity === 3) severityLabel = '高';
-                    var severityColor = '#27ae60';
-                    if (a.severity === 2) severityColor = '#f57c00';
-                    else if (a.severity === 3) severityColor = '#e74c3c';
-                    html += '<tr>' +
-                        '<td>' + (a.alertType || '') + '</td>' +
-                        '<td>' + (a.userId || '') + '</td>' +
-                        '<td>' + (a.description || '') + '</td>' +
-                        '<td>' + (a.riskScore ? (a.riskScore * 100).toFixed(0) + '%' : '') + '</td>' +
-                        '<td><span style="color:' + severityColor + ';font-weight:bold;">' + severityLabel + '</span></td>' +
-                        '<td><button onclick="resolveAlert(' + a.id + ')" style="padding:4px 12px;background:#667eea;color:#fff;border:none;border-radius:4px;cursor:pointer;">处理</button></td>' +
-                        '</tr>';
-                });
-                html += '</tbody></table>';
-                document.getElementById('fraud-alerts-content').innerHTML = html;
-            }
-        }).catch(function() {});
-
-    function resolveAlert(id) {
-        fetch('/api/admin/fraud/resolve/' + id, { method: 'POST' })
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-                if (data.success) {
-                    alert('已处理');
-                    location.reload();
-                }
-            }).catch(function() {});
-    }
-
-    function toggleMobileMenu() {
-        var menu = document.getElementById('mobileDropdown');
-        if (menu) menu.classList.toggle('show');
-    }
-    document.addEventListener('DOMContentLoaded', function() {
-        var menu = document.getElementById('mobileDropdown');
-        if (!menu) return;
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.hamburger-btn')) return;
-            if (!e.target.closest('.mobile-dropdown')) menu.classList.remove('show');
-        });
-    });
-</script>
-
-<!-- 移动端底部导航 -->
-<div class="mobile-bottom-nav">
-    <div class="nav-items">
-        <a href="/" class="nav-item">
-            <span class="nav-icon">🏠</span>
-            <span>首页</span>
-        </a>
-        <a href="/admin/dashboard" class="nav-item active">
-            <span class="nav-icon">📊</span>
-            <span>控制台</span>
-        </a>
-        <a href="/admin/users" class="nav-item">
-            <span class="nav-icon">👥</span>
-            <span>用户</span>
-        </a>
-        <a href="/product/list" class="nav-item">
-            <span class="nav-icon">📦</span>
-            <span>商品</span>
-        </a>
-        <a href="/order/list" class="nav-item">
-            <span class="nav-icon">📋</span>
-            <span>订单</span>
-        </a>
+    <!-- Recent Users -->
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <h3>最近注册用户</h3>
+            <a href="/admin/users" class="btn btn-sm btn-secondary">查看全部</a>
+        </div>
+        <div class="admin-card-body no-padding">
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>用户名</th>
+                            <th>邮箱</th>
+                            <th>角色</th>
+                            <th>状态</th>
+                            <th>注册时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${users}" th:if="${userStat.index < 10}">
+                            <td th:text="${user.id}">1</td>
+                            <td><strong th:text="${user.username}">用户名</strong></td>
+                            <td th:text="${user.email != null ? user.email : '-'}">-</td>
+                            <td>
+                                <span th:if="${user.roleType == 0}" class="badge badge-blue">顾客</span>
+                                <span th:if="${user.roleType == 1}" class="badge badge-green">商家</span>
+                                <span th:if="${user.roleType == 2}" class="badge badge-purple">管理员</span>
+                            </td>
+                            <td>
+                                <span class="status-dot" th:classappend="${user.status == 1} ? 'active' : 'inactive'"></span>
+                                <span th:text="${user.status == 1} ? '启用' : '禁用'">启用</span>
+                            </td>
+                            <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
+
 </div>
 </body>
+
+<script th:replace="fragments/admin-layout :: sidebar-script"></script>
+<script>
+function showToast(msg, type) {
+    type = type || 'info';
+    var t = document.createElement('div');
+    t.className = 'admin-toast ' + type;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(function(){ t.classList.add('hide'); t.addEventListener('animationend', function(){ t.remove(); }); }, 2500);
+}
+
+fetch('/api/analytics/behavior-stats')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.success && data.data) {
+            var s = data.data;
+            document.getElementById('behavior-stats').innerHTML =
+                '<div class="behavior-card"><div class="behavior-value">'+(s.totalViews||0)+'</div><div class="behavior-label">浏览次数</div></div>'+
+                '<div class="behavior-card"><div class="behavior-value">'+(s.totalSearches||0)+'</div><div class="behavior-label">搜索次数</div></div>'+
+                '<div class="behavior-card"><div class="behavior-value">'+(s.totalAddCart||0)+'</div><div class="behavior-label">加入购物车</div></div>'+
+                '<div class="behavior-card"><div class="behavior-value">'+(s.totalPurchases||0)+'</div><div class="behavior-label">购买次数</div></div>'+
+                '<div class="behavior-card"><div class="behavior-value">'+(s.activeUsers||0)+'</div><div class="behavior-label">活跃用户</div></div>';
+        }
+    }).catch(function(){});
+
+fetch('/api/analytics/sales-trend?days=30')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.success && data.data && data.data.length > 0) {
+            var items = data.data;
+            var maxRevenue = 0;
+            items.forEach(function(d) { if (d.revenue > maxRevenue) maxRevenue = d.revenue; });
+            var bars = items.slice(-14).map(function(d) {
+                var h = maxRevenue > 0 ? Math.max(4, (d.revenue / maxRevenue) * 100) : 4;
+                var date = d.date ? d.date.substring(5) : '';
+                return '<div style="flex:1;text-align:center;"><div class="trend-bar" style="height:'+h+'px;" title="'+date+' ¥'+(d.revenue||0).toFixed(2)+'"></div><div class="trend-label">'+date+'</div></div>';
+            });
+            document.getElementById('sales-trend-chart').innerHTML = '<div class="trend-bar-container">'+bars.join('')+'</div>';
+        } else {
+            document.getElementById('sales-trend-chart').innerHTML = '<p style="text-align:center;color:#94a3b8;padding:20px;">暂无销售数据</p>';
+        }
+    }).catch(function(){});
+
+fetch('/api/analytics/category-distribution')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.success && data.data && data.data.length > 0) {
+            var html = '<table class="admin-table"><thead><tr><th>分类</th><th>订单数</th><th>营收</th></tr></thead><tbody>';
+            data.data.forEach(function(c) {
+                html += '<tr><td>'+(c.name||'')+'</td><td>'+(c.order_count||0)+'</td><td>&#165;'+(c.revenue||0).toFixed(2)+'</td></tr>';
+            });
+            html += '</tbody></table>';
+            document.getElementById('category-distribution').innerHTML = html;
+        }
+    }).catch(function(){});
+
+fetch('/api/admin/fraud/alerts?unresolvedOnly=true')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.success && data.data && data.data.length > 0) {
+            var section = document.getElementById('fraud-alert-section');
+            section.style.display = 'block';
+            var html = '<table class="admin-table"><thead><tr><th>类型</th><th>用户ID</th><th>描述</th><th>风险评分</th><th>严重程度</th><th>操作</th></tr></thead><tbody>';
+            data.data.forEach(function(a) {
+                var severityLabel = '低', severityClass = 'badge-green';
+                if (a.severity === 2) { severityLabel = '中'; severityClass = 'badge-orange'; }
+                else if (a.severity === 3) { severityLabel = '高'; severityClass = 'badge-red'; }
+                html += '<tr>'+
+                    '<td><span class="badge badge-gray">'+(a.alertType||'')+'</span></td>'+
+                    '<td>'+(a.userId||'')+'</td>'+
+                    '<td>'+(a.description||'')+'</td>'+
+                    '<td>'+(a.riskScore ? (a.riskScore*100).toFixed(0)+'%' : '')+'</td>'+
+                    '<td><span class="badge '+severityClass+'">'+severityLabel+'</span></td>'+
+                    '<td><button type="button" class="btn btn-sm btn-primary" onclick="resolveAlert('+a.id+')">处理</button></td>'+
+                    '</tr>';
+            });
+            html += '</tbody></table>';
+            document.getElementById('fraud-alerts-content').innerHTML = html;
+        }
+    }).catch(function(){});
+
+function resolveAlert(id) {
+    fetch('/api/admin/fraud/resolve/'+id, { method:'POST' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            showToast(data.success ? '已处理' : '处理失败', data.success ? 'success' : 'error');
+            if (data.success) location.reload();
+        }).catch(function(){});
+}
+</script>
 </html>

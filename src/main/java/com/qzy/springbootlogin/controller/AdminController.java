@@ -1,8 +1,11 @@
 package com.qzy.springbootlogin.controller;
 
+import com.qzy.springbootlogin.mapper.OperationLogMapper;
+import com.qzy.springbootlogin.pojo.OperationLog;
 import com.qzy.springbootlogin.pojo.Result;
 import com.qzy.springbootlogin.pojo.User;
 import com.qzy.springbootlogin.service.UserService;
+import com.qzy.springbootlogin.util.AdminOperation;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,9 +30,13 @@ public class AdminController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private OperationLogMapper logMapper;
+
     /**
      * 管理员后台首页
      */
+    @AdminOperation(value = "查看管理后台首页", module = "仪表盘")
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
@@ -79,6 +86,7 @@ public class AdminController {
     /**
      * 用户管理页面
      */
+    @AdminOperation(value = "查看用户管理页面", module = "用户管理")
     @GetMapping("/users")
     public String userManagement(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
@@ -93,12 +101,20 @@ public class AdminController {
         model.addAttribute("username", session.getAttribute("username"));
         model.addAttribute("roleType", roleType);
 
+        int customerCount = (int) users.stream().filter(u -> u.getRoleType() != null && u.getRoleType() == 0).count();
+        int merchantCount = (int) users.stream().filter(u -> u.getRoleType() != null && u.getRoleType() == 1).count();
+        int adminCount = (int) users.stream().filter(u -> u.getRoleType() != null && u.getRoleType() == 2).count();
+        model.addAttribute("customerCount", customerCount);
+        model.addAttribute("merchantCount", merchantCount);
+        model.addAttribute("adminCount", adminCount);
+
         return "pages/admin/users";
     }
 
     /**
      * 更新用户角色
      */
+    @AdminOperation(value = "修改用户角色", module = "用户管理")
     @PostMapping("/user/role")
     @ResponseBody
     public Result updateUserRole(@RequestParam Long userId, @RequestParam Integer roleType, HttpSession session) {
@@ -126,5 +142,64 @@ public class AdminController {
         } catch (Exception e) {
             return Result.error("更新失败：" + e.getMessage());
         }
+    }
+
+
+    @AdminOperation(value = "查看操作日志", module = "系统日志")
+    @GetMapping("/logs")
+    public String operationLogs(HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+        Integer roleType = (Integer) session.getAttribute("roleType");
+        if (userId == null || roleType != 2) {
+            return "redirect:/login";
+        }
+        model.addAttribute("username", session.getAttribute("username"));
+        model.addAttribute("roleType", roleType);
+        return "pages/admin/logs";
+    }
+
+    @GetMapping("/api/logs")
+    @ResponseBody
+    public Result getLogs(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int pageSize,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String module,
+            @RequestParam(required = false) String dateStart,
+            @RequestParam(required = false) String dateEnd) {
+        int offset = (page - 1) * pageSize;
+        List<OperationLog> logs;
+        int total;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            logs = logMapper.search(keyword.trim(), offset, pageSize);
+            total = logMapper.countSearch(keyword.trim());
+        } else if (module != null && !module.trim().isEmpty()) {
+            logs = logMapper.findByModulePage(module.trim(), offset, pageSize);
+            total = logMapper.countByModule(module.trim());
+        } else if (dateStart != null && !dateStart.isEmpty() && dateEnd != null && !dateEnd.isEmpty()) {
+            logs = logMapper.findByDateRange(dateStart + " 00:00:00", dateEnd + " 23:59:59", offset, pageSize);
+            total = logMapper.countByDateRange(dateStart + " 00:00:00", dateEnd + " 23:59:59");
+        } else {
+            logs = logMapper.findByPage(offset, pageSize);
+            total = logMapper.count();
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("logs", logs);
+        data.put("total", total);
+        data.put("page", page);
+        data.put("pageSize", pageSize);
+        return Result.success("获取成功", data);
+    }
+
+    @AdminOperation(value = "清理旧日志", module = "系统日志")
+    @DeleteMapping("/api/logs/clean")
+    @ResponseBody
+    public Result cleanLogs(@RequestParam(defaultValue = "90") int days, HttpSession session) {
+        Integer roleType = (Integer) session.getAttribute("roleType");
+        if (roleType == null || roleType != 2) return Result.error("需要管理员权限");
+        int deleted = logMapper.deleteOlderThan(days);
+        return Result.success("已清理 " + deleted + " 条" + days + "天前的日志");
     }
 }

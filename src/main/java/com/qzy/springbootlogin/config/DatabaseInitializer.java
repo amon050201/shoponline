@@ -352,6 +352,25 @@ public class DatabaseInitializer implements CommandLineRunner {
                     ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
             System.out.println("反馈表检查/创建成功");
 
+            // 创建操作日志表
+            jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS operation_log (" +
+                    "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+                    "user_id BIGINT, " +
+                    "username VARCHAR(50), " +
+                    "module VARCHAR(50), " +
+                    "operation VARCHAR(100), " +
+                    "method VARCHAR(200), " +
+                    "params TEXT, " +
+                    "ip VARCHAR(50), " +
+                    "result VARCHAR(500), " +
+                    "duration BIGINT DEFAULT 0, " +
+                    "created_time DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+                    "INDEX idx_user (user_id), " +
+                    "INDEX idx_module (module), " +
+                    "INDEX idx_created (created_time)" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+            System.out.println("操作日志表检查/创建成功");
+
             // 创建收货地址表
             jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS address (" +
                     "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +

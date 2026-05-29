@@ -137,6 +137,7 @@ h4 { font-size: 1rem; font-weight: 600; color: var(--c-text-secondary); }
   max-width: var(--max-w);
   margin: 0 auto;
   padding: var(--space-lg);
+  text-align: center;
 }
 
 /* ===== Navigation ===== */
@@ -399,6 +400,7 @@ tr:hover td { background: #fafbfc; }
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: var(--space-md);
   margin-bottom: var(--space-lg);
+  justify-items: center;
 }
 
 .stat-card {
@@ -607,6 +609,7 @@ tr:hover td { background: #fafbfc; }
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: var(--space-md);
   margin: var(--space-lg) 0;
+  justify-items: center;
 }
 
 .feature-card {
@@ -646,6 +649,7 @@ tr:hover td { background: #fafbfc; }
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: var(--space-md);
+  justify-items: center;
 }
 
 .product-card {

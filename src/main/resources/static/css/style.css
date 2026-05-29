@@ -77,16 +77,9 @@ img { max-width: 100%; height: auto; }
   font-size: 2rem;
   font-weight: 700;
   color: #3d322b;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   letter-spacing: 0.04em;
   font-family: 'Noto Serif SC', 'STKaiti', 'KaiTi', serif;
-}
-
-.home-hero p {
-  font-size: 14px;
-  color: #8c7b6e;
-  letter-spacing: 0.1em;
-  font-family: 'STKaiti', 'KaiTi', serif;
 }
 
 .hero-welcome {
